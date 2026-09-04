@@ -152,17 +152,36 @@
         </div>
       </div>
 
-      <div class="section-header"><h3>Parcourir par type 🔎</h3></div>
+      <!-- 🟢 Mukiz Custom Playlists & Spotify Integration Box -->
+      <div class="card card-custom-playlists-mukiz">
+        <div class="custom-pl-header">
+          <div class="custom-pl-icon">🎙️</div>
+          <div>
+            <h3 class="custom-pl-title">Custom playlists</h3>
+            <p class="custom-pl-subtitle">Crée tes propres playlists à partir de tes titres préférés !</p>
+          </div>
+        </div>
+        <button id="btn-open-spotify-modal" class="btn btn-yellow btn-manage-pl">
+          ⚡ Connecter mon compte Spotify / Gérer mes playlists
+        </button>
+        <div class="divider-or"><span>ou</span></div>
+        <div class="custom-pl-input-row">
+          <input type="text" id="spotify-url-input" placeholder="Coller le lien d'une playlist Spotify ou Deezer..." class="custom-pl-input" autocomplete="off">
+          <button id="btn-import-spotify" class="btn btn-open-custom">Ouvrir</button>
+        </div>
+      </div>
+
+      <div class="section-header"><h3>Browse by type 🔎</h3></div>
       <div class="category-tags">
-        <button class="category-tag" data-cat="genres">🎵 Genres</button>
+        <button class="category-tag active" data-cat="all">✨ Toutes</button>
+        <button class="category-tag" data-cat="genres">📼 Genres</button>
         <button class="category-tag" data-cat="decades">📅 Décennies</button>
-        <button class="category-tag" data-cat="artists">🎤 Artistes</button>
         <button class="category-tag" data-cat="themes">🎬 Thèmes</button>
       </div>
 
-      <div class="section-header"><h3>Toutes les playlists 💿</h3></div>
+      <div class="section-header"><h3>For you 💖 & Toutes les playlists 💿</h3></div>
       <div id="playlists-grid" class="playlists-grid">
-        <!-- Filled by JS -->
+        <!-- Filled by JS with rich Mukiz cards -->
       </div>
     </section>
 
@@ -193,6 +212,34 @@
       <!-- Settings -->
       <div id="lobby-settings" class="card">
         <h3 class="card-section-title">⚙️ Réglages de la partie</h3>
+
+        <!-- Selected Playlist Showcase Card (Mukiz Signature) -->
+        <div class="lobby-selected-playlist" id="lobby-selected-playlist-card">
+          <div class="lobby-playlist-left">
+            <div class="lobby-cover-wrapper">
+              <img id="lobby-playlist-cover" src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&q=80" alt="" class="lobby-playlist-thumb">
+              <span class="mukiz-crown-badge">👑</span>
+            </div>
+            <div class="lobby-playlist-meta">
+              <div class="lobby-badge-row">
+                <span class="lobby-playlist-badge" id="lobby-playlist-badge">Rap Français</span>
+                <span class="lobby-playlist-diff" id="lobby-playlist-diff">🟢 FACILE</span>
+              </div>
+              <h4 class="lobby-playlist-title" id="lobby-playlist-name">Rap Français</h4>
+              <p class="lobby-playlist-desc" id="lobby-playlist-desc">Les plus gros bangers du rap francophone</p>
+              
+              <!-- 💿 Mini Covers des sons de la playlist (Cover du son) -->
+              <div class="lobby-track-covers-box">
+                <span class="lobby-covers-label">Extraits inclus :</span>
+                <div class="lobby-track-covers-stack" id="lobby-preview-covers">
+                  <!-- filled by JS with mini album covers -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <button id="btn-change-playlist" class="btn btn-outline btn-sm">Changer</button>
+        </div>
+
         <div class="settings-grid">
           <div class="setting-item">
             <label>Mode</label>
@@ -252,9 +299,16 @@
     <!-- ═══ VIEW: GAME ═══ -->
     <section id="view-game" class="view">
       <div class="game-top-bar">
-        <div class="round-indicator">
-          <span class="round-current" id="g-round">1</span>/<span id="g-total">10</span>
+        <!-- 🎵 Chosen Playlist Pill (Like Mukiz Top-Left) -->
+        <div class="game-chosen-playlist-pill" id="g-chosen-playlist">
+          <img id="g-chosen-cover" src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&q=80" alt="" class="chosen-playlist-thumb">
+          <span id="g-chosen-name" class="chosen-playlist-name">Rap Français</span>
         </div>
+
+        <div class="round-pills-container" id="g-round-pills">
+          <!-- 1 2 3 4 5... filled by JS -->
+        </div>
+
         <div class="timer-wrapper">
           <div class="timer-track">
             <div class="timer-fill" id="g-timer-fill"></div>
@@ -263,39 +317,56 @@
         </div>
       </div>
 
-      <!-- Mini Scoreboard -->
-      <div class="game-scoreboard" id="g-scoreboard"></div>
+      <div class="game-layout-grid">
+        <!-- 📜 Mukiz Left History Column -->
+        <aside class="game-history-sidebar" id="g-history-sidebar">
+          <h4 class="history-sidebar-title">Historique 📜</h4>
+          <div class="history-mascot-box" id="g-history-empty">
+            <div class="history-mascot">🎧</div>
+            <p class="history-empty-text">Aucun morceau joué pour le moment…</p>
+          </div>
+          <ul class="history-list" id="g-history-list">
+            <!-- Dynamic past songs with cover du son, artist & title -->
+          </ul>
+        </aside>
 
-      <!-- Dynamic Hint Banner (Conseils & Indices en fin de chrono) -->
-      <div id="g-hint-banner" class="hint-banner hidden">
-        <span class="hint-icon">💡</span>
-        <span id="g-hint-text" class="hint-text">Indice en approche…</span>
-      </div>
+        <!-- 🎮 Center Game Arena -->
+        <div class="game-main-arena">
+          <!-- Mini Scoreboard -->
+          <div class="game-scoreboard" id="g-scoreboard"></div>
 
-      <!-- Audio Visual -->
-      <div class="game-audio-zone">
-        <div class="vinyl-wrapper" id="g-vinyl-wrapper">
-          <div class="vinyl-disc" id="g-vinyl">
-            <div class="vinyl-mystery-center" id="g-vinyl-center">?</div>
-            <img id="g-cover" src="" alt="" class="vinyl-cover-img" style="display:none;">
+          <!-- Dynamic Hint Banner (Conseils & Indices en fin de chrono) -->
+          <div id="g-hint-banner" class="hint-banner hidden">
+            <span class="hint-icon">💡</span>
+            <span id="g-hint-text" class="hint-text">Indice en approche…</span>
+          </div>
+
+          <!-- Audio Visual -->
+          <div class="game-audio-zone">
+            <div class="vinyl-wrapper" id="g-vinyl-wrapper">
+              <div class="vinyl-disc" id="g-vinyl">
+                <div class="vinyl-mystery-center" id="g-vinyl-center">?</div>
+                <img id="g-cover" src="" alt="" class="vinyl-cover-img" style="display:none;">
+              </div>
+            </div>
+            <canvas id="g-visualizer" class="game-visualizer"></canvas>
+          </div>
+
+          <!-- Answer Input -->
+          <div class="game-answer-zone" id="g-answer-zone">
+            <div class="answer-row">
+              <input type="text" id="g-answer" placeholder="Tape ta réponse…" autocomplete="off" class="answer-field">
+              <button id="g-submit" class="btn btn-yellow">Envoyer</button>
+            </div>
+            <div class="mic-row">
+              <button id="g-mic" class="mic-btn" title="Parle pour répondre">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+              </button>
+              <span id="g-speech-status" class="speech-label">Clique ou tape ta réponse</span>
+            </div>
+            <div id="g-speech-preview" class="speech-preview-text"></div>
           </div>
         </div>
-        <canvas id="g-visualizer" class="game-visualizer"></canvas>
-      </div>
-
-      <!-- Answer Input -->
-      <div class="game-answer-zone" id="g-answer-zone">
-        <div class="answer-row">
-          <input type="text" id="g-answer" placeholder="Tape ta réponse…" autocomplete="off" class="answer-field">
-          <button id="g-submit" class="btn btn-yellow">Envoyer</button>
-        </div>
-        <div class="mic-row">
-          <button id="g-mic" class="mic-btn" title="Parle pour répondre">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-          </button>
-          <span id="g-speech-status" class="speech-label">Clique ou tape ta réponse</span>
-        </div>
-        <div id="g-speech-preview" class="speech-preview-text"></div>
       </div>
 
       <!-- Feedback overlay (correct/wrong) -->
@@ -453,6 +524,114 @@
 
         <div class="settings-footer-actions">
           <button id="btn-logout" class="btn btn-outline btn-sm">Se déconnecter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MODAL: PLAYLIST DETAILS ═══════════════ -->
+  <div id="modal-playlist-details" class="modal-backdrop hidden">
+    <div class="modal-card modal-playlist-card">
+      <button class="modal-close" id="btn-close-playlist-modal">&times;</button>
+      <div class="playlist-modal-header">
+        <div class="modal-cover-wrapper">
+          <img id="modal-pl-cover" src="" alt="" class="modal-pl-img">
+          <span class="mukiz-crown-badge modal-crown">👑</span>
+        </div>
+        <div class="modal-pl-info">
+          <span class="playlist-tag" id="modal-pl-tag">Genre</span>
+          <h2 class="modal-title" id="modal-pl-title">Titre Playlist</h2>
+          <p class="modal-subtitle" id="modal-pl-desc">Description</p>
+          <div class="modal-pl-stats">
+            <span id="modal-pl-count" class="pl-stat-pill">🎵 150 titres</span>
+            <span id="modal-pl-diff" class="pl-stat-pill">🟢 Facile</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 💿 Mini Covers des sons inclus dans la playlist -->
+      <div class="modal-pl-preview-section">
+        <h4 class="modal-preview-title">Extraits & Artistes inclus 🎧</h4>
+        <div class="modal-preview-covers-row" id="modal-preview-covers">
+          <!-- Filled dynamically by JS with real album covers -->
+        </div>
+      </div>
+
+      <div class="modal-pl-actions">
+        <button id="modal-btn-play" class="btn btn-yellow btn-block btn-lg">▶ Jouer avec cette playlist</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MODAL: SPOTIFY CONNECT ═══════════════ -->
+  <div id="modal-spotify-connect" class="modal-backdrop hidden">
+    <div class="modal-card modal-spotify-card">
+      <button class="modal-close" id="btn-close-spotify-modal">&times;</button>
+      <div class="spotify-modal-header">
+        <div class="spotify-logo-box">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        </div>
+        <div>
+          <h2 class="modal-title">Connecter Spotify 🟢</h2>
+          <p class="modal-subtitle">Importe tes playlists Spotify pour des blind tests 100% sur mesure</p>
+        </div>
+      </div>
+
+      <div class="spotify-modal-body">
+        <!-- Direct Link input -->
+        <div class="spotify-section">
+          <label class="spotify-input-label">Coller le lien de ta playlist Spotify ou Deezer :</label>
+          <div class="spotify-input-group">
+            <input type="text" id="modal-spotify-url" placeholder="https://open.spotify.com/playlist/..." class="spotify-modal-field">
+            <button id="modal-btn-import-url" class="btn btn-spotify">Importer ⚡</button>
+          </div>
+        </div>
+
+        <!-- Featured Spotify Playlists ready to import in 1-click -->
+        <div class="spotify-section">
+          <label class="spotify-input-label">Ou importer des playlists Spotify populaires en 1 clic :</label>
+          <div class="spotify-presets-grid" id="spotify-presets">
+            <div class="spotify-preset-card" data-url="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M">
+              <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80" alt="" class="preset-thumb">
+              <div class="preset-meta">
+                <h5>Today's Top Hits</h5>
+                <span>Mondial • 50 bangers</span>
+              </div>
+              <button class="btn-preset-add">Ajouter +</button>
+            </div>
+            <div class="spotify-preset-card" data-url="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd">
+              <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&q=80" alt="" class="preset-thumb">
+              <div class="preset-meta">
+                <h5>Rap Caviar</h5>
+                <span>Hip-Hop • 50 bangers</span>
+              </div>
+              <button class="btn-preset-add">Ajouter +</button>
+            </div>
+            <div class="spotify-preset-card" data-url="https://open.spotify.com/playlist/37i9dQZF1DWZjqjZMudx9T">
+              <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&q=80" alt="" class="preset-thumb">
+              <div class="preset-meta">
+                <h5>Hits du Moment France</h5>
+                <span>Top France • 50 bangers</span>
+              </div>
+              <button class="btn-preset-add">Ajouter +</button>
+            </div>
+            <div class="spotify-preset-card" data-url="https://open.spotify.com/playlist/37i9dQZF1DX1lVhptIYRda">
+              <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&q=80" alt="" class="preset-thumb">
+              <div class="preset-meta">
+                <h5>Hot Hits Dance</h5>
+                <span>Club & Electro • 50 bangers</span>
+              </div>
+              <button class="btn-preset-add">Ajouter +</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saved Custom Playlists -->
+        <div class="spotify-section">
+          <label class="spotify-input-label">Mes playlists connectées :</label>
+          <div id="spotify-saved-list" class="spotify-saved-list">
+            <p class="spotify-no-saved">Aucune playlist personnalisée importée pour l'instant.</p>
+          </div>
         </div>
       </div>
     </div>

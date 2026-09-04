@@ -346,6 +346,27 @@
     if (timerFill) timerFill.classList.remove('urgent');
     if (timerText) timerText.classList.remove('urgent');
 
+    // 🎵 Update Chosen Playlist Pill (Mukiz top-left)
+    const chosenCover = $('#g-chosen-cover');
+    const chosenName = $('#g-chosen-name');
+    const currentGenre = (state.room && state.room.genre) || data.genre || 'rap-fr';
+    const currentPl = state.playlists.find(p => p.key === currentGenre);
+    if (chosenCover && currentPl) chosenCover.src = currentPl.cover || '';
+    if (chosenName && currentPl) chosenName.textContent = currentPl.name;
+
+    // 🔴 Mukiz Round Pills (1 2 3 ... totalRounds)
+    const roundPillsContainer = $('#g-round-pills');
+    const totalRounds = data.totalRounds || (state.room && state.room.totalRounds) || 10;
+    const curRound = data.roundNumber || data.round || 1;
+    if (roundPillsContainer && totalRounds) {
+      let pillsHtml = '';
+      for (let i = 1; i <= totalRounds; i++) {
+        const cls = i === curRound ? 'active' : (i < curRound ? 'past' : '');
+        pillsHtml += `<div class="round-pill ${cls}">${i}</div>`;
+      }
+      roundPillsContainer.innerHTML = pillsHtml;
+    }
+
     // Vinyl mystery center vs cover
     const vinylCenter = $('#g-vinyl-center');
     const vinylCover = $('#g-cover');
@@ -362,8 +383,8 @@
     // Round info
     const roundEl = $('#g-round');
     const totalEl = $('#g-total');
-    if (roundEl) roundEl.textContent = data.roundNumber || data.round;
-    if (totalEl) totalEl.textContent = data.totalRounds;
+    if (roundEl) roundEl.textContent = curRound;
+    if (totalEl) totalEl.textContent = totalRounds;
 
     // Reset input
     const input = $('#g-answer');
@@ -460,7 +481,9 @@
     AudioPlayer.stop();
     SpeechInput.stopListening();
 
-    const { track, answers, scores } = data.result;
+    const track = data.result.track || data.result.correctAnswer;
+    const answers = data.result.answers;
+    const scores = data.result.scores || data.result.playerResults;
 
     // Révéler la cover sur le disque vinyle
     const vinylCenter = $('#g-vinyl-center');
@@ -478,6 +501,26 @@
       if (cCover) cCover.src = track.cover || '';
       if (cArtist) cArtist.textContent = track.artist || 'Artiste inconnu';
       if (cTitle) cTitle.textContent = track.title || 'Titre';
+
+      // 📜 Mukiz Left History sidebar addition
+      const histEmpty = $('#g-history-empty');
+      if (histEmpty) histEmpty.style.display = 'none';
+
+      const histList = $('#g-history-list');
+      if (histList) {
+        const isCorrect = state.hasAnswered;
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `
+          <img src="${track.cover || 'https://cdn-images.dzcdn.net/images/cover/134778e4c4f19ea71c82408300925a9a/250x250-000000-80-0-0.jpg'}" alt="" class="history-thumb">
+          <div class="history-meta">
+            <div class="history-track">${escapeHtml(track.title || 'Titre')}</div>
+            <div class="history-artist">${escapeHtml(track.artist || 'Artiste')}</div>
+          </div>
+          <span class="history-status">${isCorrect ? '✅' : '❌'}</span>
+        `;
+        histList.prepend(li);
+      }
     }
 
     // Résultats du round
@@ -693,6 +736,39 @@
 
     generateQrCode(state.room.roomId);
 
+    // Update selected playlist card in lobby
+    const currentGenre = state.room.genre || 'rap-fr';
+    const plObj = state.playlists.find(p => p.key === currentGenre) || {
+      name: currentGenre,
+      description: 'Playlist sélectionnée',
+      cover: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&q=80',
+      category: 'GENRE',
+    };
+
+    const plThumb = $('#lobby-playlist-cover');
+    const plBadge = $('#lobby-playlist-badge');
+    const plDiff = $('#lobby-playlist-diff');
+    const plName = $('#lobby-playlist-name');
+    const plDesc = $('#lobby-playlist-desc');
+    const plPreviews = $('#lobby-preview-covers');
+
+    if (plThumb) plThumb.src = plObj.cover || '';
+    if (plBadge) plBadge.textContent = (plObj.category || 'PLAYLIST').toUpperCase();
+    if (plDiff) plDiff.textContent = `🟢 ${(plObj.difficulty || 'FACILE').toUpperCase()}`;
+    if (plName) plName.textContent = `${plObj.emoji || '🎵'} ${plObj.name}`;
+    if (plDesc) plDesc.textContent = plObj.description || 'Playlist de la partie';
+
+    if (plPreviews) {
+      const covers = plObj.previewCovers || [];
+      if (covers.length > 0) {
+        plPreviews.innerHTML = covers.map(c => `
+          <img src="${c}" alt="" class="mini-track-cover" title="Extrait inclus">
+        `).join('') + `<span style="font-size:0.75rem;font-weight:800;color:#64748b;margin-left:14px;">+${plObj.trackCount || 100} sons</span>`;
+      } else {
+        plPreviews.innerHTML = '<span style="font-size:0.75rem;color:#94a3b8;">Extraits variés</span>';
+      }
+    }
+
     const settingsCard = $('#lobby-settings');
     if (settingsCard) {
       const inputs = settingsCard.querySelectorAll('select');
@@ -769,42 +845,268 @@
   }
 
   // ═══════════════════════════════════════
-  // PLAYLISTS VIEW RENDERING
+  // PLAYLISTS VIEW RENDERING (MUKIZ STYLE)
   // ═══════════════════════════════════════
-  function renderPlaylistsGrid(playlists, filter = 'all') {
+  let activePlaylistFilter = 'all';
+  let activePlaylistCategory = 'all';
+
+  function renderPlaylistsGrid(playlists = state.playlists, filter = activePlaylistFilter, category = activePlaylistCategory) {
     const grid = $('#playlists-grid');
     if (!grid) return;
 
-    let filtered = playlists;
+    activePlaylistFilter = filter;
+    activePlaylistCategory = category;
+
+    let filtered = [...playlists];
+
+    // Filter by tab (Explorer, Populaires, Nouveautés)
     if (filter === 'popular') {
-      filtered = playlists.filter(p => ['hits-fr', 'rap-fr', 'pop', 'tiktok', 'pop-2020s'].includes(p.key));
+      filtered = filtered.filter(p => ['best-fr', 'hits-fr', 'rap-fr', 'pop', 'tiktok', 'pop-2020s', 'annees-80'].includes(p.key) || p.isCustom);
     } else if (filter === 'new') {
-      filtered = playlists.filter(p => ['pop-2020s', 'tiktok', 'summer', 'jeux-video'].includes(p.key));
+      filtered = filtered.filter(p => ['pop-2020s', 'rap-fr-2020s', 'french-touch', 'films', 'disney-fr', 'mix'].includes(p.key) || p.isCustom);
     }
 
-    grid.innerHTML = filtered.map(p => `
-      <div class="playlist-card" data-key="${p.key}" style="border-top: 5px solid ${p.color || '#4361ee'}">
-        <div class="playlist-icon" style="background: ${p.color || '#4361ee'}22; color: ${p.color || '#4361ee'}">
-          ${p.emoji || '🎵'}
-        </div>
-        <div class="playlist-info">
-          <h4 class="playlist-title">${escapeHtml(p.name)}</h4>
-          <span class="playlist-tag">30s Previews</span>
-        </div>
-        <button class="btn btn-sm btn-yellow btn-play-playlist" data-key="${p.key}">
-          ▶ Jouer
-        </button>
-      </div>
-    `).join('');
+    // Filter by category tag (Genres, Décennies, Thèmes)
+    if (category && category !== 'all') {
+      filtered = filtered.filter(p => p.category === category);
+    }
 
+    grid.innerHTML = filtered.map(p => {
+      const cover = p.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80';
+      const cat = (p.category || 'PLAYLIST').toUpperCase();
+      const diffClass = (p.difficulty || 'FACILE').toLowerCase();
+      const count = p.trackCount || 100;
+      const previewCovers = p.previewCovers || [];
+
+      return `
+        <div class="playlist-card-mukiz" data-key="${p.key}">
+          <!-- Top Dark Title Bar (Mukiz Signature) -->
+          <div class="card-mukiz-header">${escapeHtml(p.name)}</div>
+
+          <div class="playlist-card-cover">
+            <img src="${cover}" alt="${escapeHtml(p.name)}" class="playlist-cover-img" loading="lazy">
+            <div class="playlist-cover-overlay"></div>
+            <span class="mukiz-crown-badge" title="Difficulté : ${p.difficulty || 'FACILE'}">👑</span>
+            <span class="playlist-count-pill">${count} titres</span>
+          </div>
+
+          <div class="playlist-card-body">
+            <p class="playlist-card-desc">${escapeHtml(p.description || 'Devine les titres et artistes le plus vite possible !')}</p>
+
+            <!-- 💿 Mini Covers des sons ("la cover du son") -->
+            ${previewCovers.length > 0 ? `
+              <div class="track-covers-stack" title="Morceaux inclus dans cette playlist">
+                ${previewCovers.map(c => `<img src="${c}" alt="" class="mini-track-cover" loading="lazy">`).join('')}
+                <span class="track-covers-label">+${count} titres</span>
+              </div>
+            ` : ''}
+
+            <div class="playlist-card-footer">
+              <span class="playlist-diff-badge ${diffClass}">${p.difficulty || 'FACILE'}</span>
+              <button class="btn-play-card btn-play-playlist" data-key="${p.key}">
+                ▶ Jouer
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Click handler on card to open detail modal
+    $$('.playlist-card-mukiz').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-play-playlist')) return;
+        const key = card.getAttribute('data-key');
+        openPlaylistDetailsModal(key);
+      });
+    });
+
+    // Click on play button
     $$('.btn-play-playlist').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const key = btn.getAttribute('data-key');
-        const name = getPlayerName();
-        if (!name) return;
-        AudioPlayer.ensureAudioContext();
-        send('CREATE_ROOM', { playerName: name, genre: key });
+        startGameWithPlaylist(key);
+      });
+    });
+  }
+
+  function openPlaylistDetailsModal(key) {
+    const p = state.playlists.find(item => item.key === key);
+    if (!p) return;
+
+    const cover = p.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80';
+    const modalCover = $('#modal-pl-cover');
+    const modalTag = $('#modal-pl-tag');
+    const modalTitle = $('#modal-pl-title');
+    const modalDesc = $('#modal-pl-desc');
+    const modalCount = $('#modal-pl-count');
+    const modalDiff = $('#modal-pl-diff');
+    const modalBtnPlay = $('#modal-btn-play');
+    const modalPreviewCovers = $('#modal-preview-covers');
+
+    if (modalCover) modalCover.src = cover;
+    if (modalTag) modalTag.textContent = `${p.emoji || '🎵'} ${(p.category || 'PLAYLIST').toUpperCase()}`;
+    if (modalTitle) modalTitle.textContent = p.name;
+    if (modalDesc) modalDesc.textContent = p.description || 'Devine les titres et artistes en quelques secondes !';
+    if (modalCount) modalCount.textContent = `🎵 ${p.trackCount || 100} titres`;
+    if (modalDiff) modalDiff.textContent = `⚡ Difficulté : ${p.difficulty || 'FACILE'}`;
+
+    // Fill sample song covers in modal
+    if (modalPreviewCovers) {
+      const covers = p.previewCovers || [];
+      if (covers.length > 0) {
+        modalPreviewCovers.innerHTML = covers.map(c => `
+          <img src="${c}" alt="" class="modal-mini-cover" title="Extrait inclus dans la playlist">
+        `).join('');
+      } else {
+        modalPreviewCovers.innerHTML = '<span style="font-size:0.8rem;color:#94a3b8;">Extraits variés du genre</span>';
+      }
+    }
+
+    if (modalBtnPlay) {
+      modalBtnPlay.onclick = () => {
+        closeModal('modal-playlist-details');
+        startGameWithPlaylist(key);
+      };
+    }
+
+    openModal('modal-playlist-details');
+  }
+
+  function startGameWithPlaylist(key) {
+    const name = getPlayerName();
+    if (!name) return;
+    AudioPlayer.ensureAudioContext();
+
+    // If already in lobby as host, update the room's genre
+    if (state.room && state.isHost) {
+      send('UPDATE_SETTINGS', {
+        settings: { genre: key },
+      });
+      showView('view-lobby');
+      UIEffects.showToast('Playlist changée pour le salon ! 🎶', 'success');
+      return;
+    }
+
+    // Otherwise, create a new room with this playlist
+    send('CREATE_ROOM', { playerName: name, genre: key });
+  }
+
+  // ═══════════════════════════════════════
+  // SPOTIFY CONNECT & CUSTOM PLAYLISTS
+  // ═══════════════════════════════════════
+  async function importSpotifyPlaylist(targetUrl) {
+    const input = $('#spotify-url-input');
+    const modalInput = $('#modal-spotify-url');
+    const url = (targetUrl || input?.value || modalInput?.value || '').trim();
+
+    if (!url) {
+      UIEffects.showToast('Colle d\'abord le lien de ta playlist Spotify ou Deezer !', 'warning');
+      if (input) UIEffects.shake(input);
+      return;
+    }
+
+    showLoading('Connexion & importation de la playlist… 🟢');
+
+    try {
+      const res = await fetch('/api/playlists/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json();
+      hideLoading();
+
+      if (!data.success || !data.playlist) {
+        throw new Error(data.message || 'Impossible d\'importer cette playlist');
+      }
+
+      const newPl = data.playlist;
+
+      // Sauvegarde dans localStorage pour persistance locale
+      saveCustomPlaylistToStorage(newPl);
+
+      // Ajouter aux playlists et rafraîchir la vue
+      state.playlists = state.playlists.filter(p => p.key !== newPl.key);
+      state.playlists.unshift(newPl);
+      populatePlaylistSelect(state.playlists);
+      renderPlaylistsGrid(state.playlists);
+      renderSavedSpotifyPlaylists();
+
+      UIEffects.showToast(`Playlist "${newPl.name}" connectée avec succès ! 🎉`, 'success', 4000);
+      if (input) input.value = '';
+      if (modalInput) modalInput.value = '';
+      closeModal('modal-spotify-connect');
+
+      // Lancer directement la partie ou aller au lobby
+      startGameWithPlaylist(newPl.key);
+    } catch (err) {
+      hideLoading();
+      UIEffects.showToast(`Erreur d'import : ${err.message}`, 'error', 4000);
+    }
+  }
+
+  function saveCustomPlaylistToStorage(pl) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('muzik_custom_playlists') || '[]');
+      const filtered = saved.filter(p => p.key !== pl.key);
+      filtered.unshift({
+        key: pl.key,
+        name: pl.name,
+        cover: pl.cover,
+        previewCovers: pl.previewCovers,
+        trackCount: pl.trackCount,
+        category: 'custom',
+        isCustom: true,
+      });
+      localStorage.setItem('muzik_custom_playlists', JSON.stringify(filtered));
+    } catch (e) {
+      console.warn('[Storage] Could not save custom playlist:', e);
+    }
+  }
+
+  function loadCustomPlaylistsFromStorage() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('muzik_custom_playlists') || '[]');
+      if (Array.isArray(saved) && saved.length > 0) {
+        saved.forEach(pl => {
+          if (!state.playlists.some(p => p.key === pl.key)) {
+            state.playlists.unshift(pl);
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('[Storage] Could not load custom playlists:', e);
+    }
+  }
+
+  function renderSavedSpotifyPlaylists() {
+    const list = $('#spotify-saved-list');
+    if (!list) return;
+
+    const saved = state.playlists.filter(p => p.isCustom);
+    if (saved.length === 0) {
+      list.innerHTML = '<p class="spotify-no-saved">Aucune playlist personnalisée importée pour l\'instant.</p>';
+      return;
+    }
+
+    list.innerHTML = saved.map(p => `
+      <div class="spotify-preset-card" style="margin-bottom:8px;">
+        <img src="${p.cover || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=200&q=80'}" alt="" class="preset-thumb">
+        <div class="preset-meta">
+          <h5>${escapeHtml(p.name)}</h5>
+          <span>🟢 Spotify/Deezer • ${p.trackCount || 20} titres</span>
+        </div>
+        <button class="btn-preset-add btn-play-saved-custom" data-key="${p.key}">Jouer ▶</button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.btn-play-saved-custom').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-key');
+        closeModal('modal-spotify-connect');
+        startGameWithPlaylist(key);
       });
     });
   }
@@ -1256,13 +1558,79 @@
       showView('view-home');
     });
 
-    // Playlists Filter Tabs
+    // Lobby — Changer de playlist
+    $('#btn-change-playlist')?.addEventListener('click', () => {
+      showView('view-playlists');
+    });
+
+    // Importer playlist Spotify direct
+    $('#btn-import-spotify')?.addEventListener('click', () => {
+      const url = $('#spotify-url-input')?.value;
+      importSpotifyPlaylist(url);
+    });
+    $('#spotify-url-input')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const url = $('#spotify-url-input')?.value;
+        importSpotifyPlaylist(url);
+      }
+    });
+
+    // Ouvrir / Fermer modal Spotify Connect
+    $('#btn-open-spotify-modal')?.addEventListener('click', () => {
+      renderSavedSpotifyPlaylists();
+      openModal('modal-spotify-connect');
+    });
+
+    $('#btn-close-spotify-modal')?.addEventListener('click', () => {
+      closeModal('modal-spotify-connect');
+    });
+
+    $('#modal-btn-import-url')?.addEventListener('click', () => {
+      const url = $('#modal-spotify-url')?.value;
+      importSpotifyPlaylist(url);
+    });
+
+    $('#modal-spotify-url')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const url = $('#modal-spotify-url')?.value;
+        importSpotifyPlaylist(url);
+      }
+    });
+
+    // Clic sur les presets Spotify dans le modal
+    $$('.spotify-preset-card').forEach(card => {
+      const btn = card.querySelector('.btn-preset-add');
+      const url = card.getAttribute('data-url');
+      if (btn && url) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          importSpotifyPlaylist(url);
+        });
+      }
+    });
+
+    // Fermer modal de détails playlist
+    $('#btn-close-playlist-modal')?.addEventListener('click', () => {
+      closeModal('modal-playlist-details');
+    });
+
+    // Playlists Filter Tabs (Explorer, Populaires, Nouveautés)
     $$('.filter-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         $$('.filter-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         const filter = tab.getAttribute('data-filter');
-        renderPlaylistsGrid(state.playlists, filter);
+        renderPlaylistsGrid(state.playlists, filter, activePlaylistCategory);
+      });
+    });
+
+    // Playlists Category Tags (Genres, Décennies, Thèmes)
+    $$('.category-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        $$('.category-tag').forEach(t => t.classList.remove('active'));
+        tag.classList.add('active');
+        const cat = tag.getAttribute('data-cat');
+        renderPlaylistsGrid(state.playlists, activePlaylistFilter, cat);
       });
     });
 
@@ -1270,7 +1638,9 @@
     $('#playlist-search')?.addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase().trim();
       const filtered = state.playlists.filter(p =>
-        p.name.toLowerCase().includes(q) || p.key.toLowerCase().includes(q)
+        p.name.toLowerCase().includes(q) ||
+        p.key.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q))
       );
       renderPlaylistsGrid(filtered);
     });
@@ -1278,8 +1648,9 @@
     // Détection de room dans l'URL (?room=XXXXXX)
     const urlParams = new URLSearchParams(window.location.search);
     const roomParam = urlParams.get('room');
+    const paramJoinInput = $('#join-code-input');
     if (roomParam) {
-      if (joinInput) joinInput.value = roomParam.toUpperCase();
+      if (paramJoinInput) paramJoinInput.value = roomParam.toUpperCase();
       UIEffects.showToast(`Code room #${roomParam} détecté ! Entre ton pseudo pour jouer.`, 'info', 4000);
     }
   }
@@ -1291,9 +1662,10 @@
     AudioPlayer.init();
     SpeechInput.init();
     UIEffects.init();
+    loadCustomPlaylistsFromStorage();
     connectWebSocket();
     bindEvents();
-    console.log('[App] Initialisé avec Mukiz Auth, Ducking & Conseils !');
+    console.log('[App] Initialisé avec Mukiz Auth, Cards enrichies, Cover du son & Spotify Connect !');
   }
 
   if (document.readyState === 'loading') {

@@ -13,6 +13,8 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 
+app.use(express.json());
+
 // Servir les fichiers statiques
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -24,6 +26,21 @@ app.get('/api/health', (req, res) => {
 // Playlists API
 app.get('/api/playlists', (req, res) => {
   res.json({ playlists: DeezerService.getAvailablePlaylists() });
+});
+
+// Import Spotify / Deezer custom playlist
+app.post('/api/playlists/import', async (req, res) => {
+  try {
+    const { url } = req.body || {};
+    if (!url) {
+      return res.status(400).json({ success: false, message: 'URL de playlist manquante' });
+    }
+    const playlist = await DeezerService.importPlaylistFromUrl(url);
+    res.json({ success: true, playlist });
+  } catch (err) {
+    console.error('[Import playlist error]:', err.message);
+    res.status(400).json({ success: false, message: err.message });
+  }
 });
 
 // WebSocket Server
