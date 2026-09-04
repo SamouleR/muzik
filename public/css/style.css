@@ -2635,7 +2635,37 @@ input:checked + .slider.round:before {
 }
 
 /* ═══════════════════════════════════════════════════
-   MODERN ROUND END SHOWCASE CARD (NO VINYL, BIG COVER)
+   GAME ARENA REAL ROTATING VINYL
+   ═══════════════════════════════════════════════════ */
+.vinyl-disc-real {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vinyl-real-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+}
+
+.spinning {
+  animation: spinVinyl 3s linear infinite;
+}
+
+@keyframes spinVinyl {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════
+   MUKIZ OFFICIAL REVEAL COMPOSITION (USER MOCKUP)
+   Vinyl in back + Portrait Artist Card + Blue Pill
    ═══════════════════════════════════════════════════ */
 .round-end-card-mukiz {
   background: #111827;
@@ -2645,7 +2675,7 @@ input:checked + .slider.round:before {
   max-width: 640px;
   width: 95%;
   color: white;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 21, 255, 0.25);
   animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -2655,7 +2685,7 @@ input:checked + .slider.round:before {
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .round-end-tag {
@@ -2678,89 +2708,110 @@ input:checked + .slider.round:before {
   color: #38bdf8;
 }
 
-.re-showcase-card {
-  display: flex;
-  gap: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  padding: 16px;
-  align-items: center;
-}
-
-.re-cover-container {
+/* 🎵 Center Stage : Vinyl + Portrait Card + Blue Pill */
+.mukiz-reveal-hero {
   position: relative;
-  width: 170px;
-  height: 170px;
-  min-width: 170px;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 290px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 16px 0;
+  overflow: visible;
 }
 
-.re-big-cover {
+.reveal-vinyl-container {
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  left: calc(50% - 190px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.reveal-vinyl-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.8));
+}
+
+.reveal-artist-portrait-card {
+  position: relative;
+  z-index: 2;
+  width: 180px;
+  height: 250px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.3);
+  transform: rotate(-1deg);
+  margin-left: -35px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reveal-artist-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  display: block;
 }
 
-.re-showcase-card:hover .re-big-cover {
-  transform: scale(1.04);
-}
-
-.re-cover-overlay-badge {
+.reveal-blue-pill {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
+  z-index: 3;
+  right: calc(50% - 240px);
+  bottom: 30px;
+  background: #0015FF;
+  border-radius: 14px;
+  padding: 16px 30px;
+  color: white;
+  box-shadow: 0 14px 30px rgba(0, 21, 255, 0.55), 0 0 25px rgba(0, 21, 255, 0.35);
+  transform: rotate(2deg);
+  animation: slideInPill 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-width: 190px;
 }
 
-.re-details-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
+@keyframes slideInPill {
+  0% { transform: translate(30px, 10px) scale(0.9) rotate(5deg); opacity: 0; }
+  100% { transform: rotate(2deg); opacity: 1; }
 }
 
-.re-kicker {
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.re-track-title {
+.reveal-pill-artist {
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: 1.15rem;
   font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: #ffffff;
-  margin: 2px 0;
   line-height: 1.2;
 }
 
-.re-artist-name {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #38bdf8;
-  margin: 0;
+.reveal-pill-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+.reveal-meta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .re-feat-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 4px;
   background: rgba(236, 72, 153, 0.18);
   border: 1px solid rgba(236, 72, 153, 0.4);
   color: #f472b6;
@@ -2774,8 +2825,8 @@ input:checked + .slider.round:before {
 .re-player-status-row {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
-  margin-top: 6px;
 }
 
 .re-status-chip {

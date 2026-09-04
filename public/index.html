@@ -348,10 +348,11 @@
             <span id="g-hint-text" class="hint-text">Indice en approche…</span>
           </div>
 
-          <!-- Audio Visual -->
+          <!-- Audio Visual with Real Rotating Vinyl -->
           <div class="game-audio-zone">
             <div class="vinyl-wrapper" id="g-vinyl-wrapper">
-              <div class="vinyl-disc" id="g-vinyl">
+              <div class="vinyl-disc-real" id="g-vinyl">
+                <img src="/images/vinyl.png" alt="Vinyl Disc" class="vinyl-real-image spinning" id="g-vinyl-img">
                 <div class="vinyl-mystery-center" id="g-vinyl-center">?</div>
                 <img id="g-cover" src="" alt="" class="vinyl-cover-img" style="display:none;">
               </div>
@@ -385,7 +386,7 @@
         </div>
       </div>
 
-      <!-- Round End overlay (Grande Révélation sans vinyle) -->
+      <!-- Round End overlay : EXACT MUKIZ DESIGN FROM USER'S MOCKUP -->
       <div id="g-round-end" class="round-end-overlay hidden">
         <div class="round-end-card-mukiz">
           <div class="round-end-header-bar">
@@ -393,29 +394,39 @@
             <span class="round-end-timer-badge">Prochain round dans <b id="re-countdown">5</b>s</span>
           </div>
 
-          <!-- Showcase Rectangulaire Moderne : Grande Cover à gauche, Infos & Badges à droite -->
-          <div class="re-showcase-card">
-            <div class="re-cover-container">
-              <img id="g-correct-cover" src="" alt="Album Cover" class="re-big-cover">
-              <div class="re-cover-overlay-badge" id="re-audio-indicator">🎵</div>
+          <!-- 🎵 COMPOSITION OFFICIELLE MUKIZ (VINYLE TOURNANT + CARTE PORTRAIT + PILL BLEU) -->
+          <div class="mukiz-reveal-hero">
+            <!-- Disque Vinyle Réel qui tourne en arrière-plan -->
+            <div class="reveal-vinyl-container">
+              <img src="/images/vinyl.png" alt="Vinyl" class="reveal-vinyl-img spinning">
             </div>
 
-            <div class="re-details-col">
-              <div class="re-title-block">
-                <span class="re-kicker">TITRE RÉVÉLÉ</span>
-                <h2 id="g-correct-title" class="re-track-title">Titre</h2>
-                <h3 id="g-correct-artist" class="re-artist-name">Artiste</h3>
-                <div id="re-feat-badge" class="re-feat-badge hidden">
-                  <span class="feat-icon">🎙️</span> Feat. <span id="re-feat-name"></span>
-                </div>
-              </div>
+            <!-- Carte Portrait Verticale de l'Artiste -->
+            <div class="reveal-artist-portrait-card">
+              <img id="g-reveal-artist-photo" src="" alt="Artiste" class="reveal-artist-photo">
+            </div>
 
-              <!-- Badges de performance du joueur : Trouvé, Streak, Feat -->
-              <div class="re-player-status-row" id="re-player-status">
-                <div class="re-status-chip" id="re-chip-result">✅ Trouvé (+750 pts)</div>
-                <div class="re-status-chip chip-streak hidden" id="re-chip-streak">🔥 Série x3 (+200 pts)</div>
-                <div class="re-status-chip chip-feat hidden" id="re-chip-feat">🎙️ Bonus Feat Cité (+150 pts)</div>
-              </div>
+            <!-- Cartouche Bleu Électrique (Artiste + Titre) -->
+            <div class="reveal-blue-pill">
+              <div class="reveal-pill-artist" id="re-pill-artist">NINHO</div>
+              <div class="reveal-pill-title" id="re-pill-title">GOUTTE D'EAU</div>
+            </div>
+
+            <!-- Hidden elements for script compatibility -->
+            <img id="g-correct-cover" src="" style="display:none;">
+            <span id="g-correct-artist" style="display:none;"></span>
+            <span id="g-correct-title" style="display:none;"></span>
+          </div>
+
+          <!-- Feat badge & Performance Chips -->
+          <div class="reveal-meta-row">
+            <div id="re-feat-badge" class="re-feat-badge hidden">
+              <span class="feat-icon">🎙️</span> Feat. <span id="re-feat-name"></span>
+            </div>
+            <div class="re-player-status-row" id="re-player-status">
+              <div class="re-status-chip" id="re-chip-result">✅ Trouvé (+850 pts)</div>
+              <div class="re-status-chip chip-streak hidden" id="re-chip-streak">🔥 Série x3 (+200 pts)</div>
+              <div class="re-status-chip chip-feat hidden" id="re-chip-feat">🎙️ Bonus Feat Cité (+150 pts)</div>
             </div>
           </div>
 

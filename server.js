@@ -73,6 +73,19 @@ app.post('/api/playlists/custom', (req, res) => {
   }
 });
 
+// Artist discography API
+app.get('/api/artist/:name/discography', async (req, res) => {
+  try {
+    const name = req.params.name;
+    if (!name) return res.status(400).json({ success: false, message: 'Nom d\'artiste manquant' });
+    const tracks = await DeezerService.getArtistDiscography(name, 100);
+    res.json({ success: true, count: tracks.length, tracks });
+  } catch (err) {
+    console.error('[Artist Discography Error]:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // WebSocket Server
 const wss = new WebSocketServer({ server });
 const gameManager = new GameManager();

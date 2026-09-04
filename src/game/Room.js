@@ -254,6 +254,7 @@ class Room {
         featArtist: featInfo.featArtist,
         cover: this.currentTrack.cover,
         coverBig: this.currentTrack.coverBig || this.currentTrack.cover,
+        artistPhoto: this.currentTrack.artistPhoto || this.currentTrack.coverBig || this.currentTrack.cover,
         album: this.currentTrack.album,
       },
       playerResults: [],

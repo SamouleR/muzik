@@ -701,6 +701,7 @@ async function searchTracks(query, limit = 10) {
     id: t.id,
     title: t.title_short || t.title,
     artist: t.artist.name,
+    artistPhoto: t.artist.picture_xl || t.artist.picture_big || t.artist.picture_medium || t.album.cover_big,
     album: t.album.title,
     cover: t.album.cover_medium || t.album.cover,
     coverBig: t.album.cover_big || t.album.cover_medium,
@@ -711,6 +712,67 @@ async function searchTracks(query, limit = 10) {
 
   trackCache.set(cacheKey, { data: result, time: Date.now() });
   return result;
+}
+
+/**
+ * Récupère la discographie complète d'un artiste en direct via l'API Deezer
+ * Retourne jusqu'à 100 morceaux avec extraits audio 30s et la photo HD portrait de l'artiste
+ */
+async function getArtistDiscography(artistName, limit = 100) {
+  const cacheKey = `discography:${artistName.toLowerCase()}`;
+  const cached = trackCache.get(cacheKey);
+  if (cached && Date.now() - cached.time < CACHE_TTL) {
+    return cached.data;
+  }
+
+  try {
+    // 1. Trouver l'artiste
+    const searchRes = await deezerFetch(`/search/artist?q=${encodeURIComponent(artistName)}&limit=1`);
+    const artist = searchRes.data?.[0];
+    if (!artist) {
+      return await searchTracks(artistName, limit);
+    }
+
+    const artistId = artist.id;
+    const artistPhoto = artist.picture_xl || artist.picture_big || artist.picture_medium;
+    const realArtistName = artist.name;
+
+    // 2. Récupérer les top morceaux de l'artiste
+    const topRes = await deezerFetch(`/artist/${artistId}/top?limit=100`);
+    let tracks = (topRes.data || []).filter(t => t.preview && t.preview !== '');
+
+    // 3. Compléter si nécessaire avec la recherche étendue
+    if (tracks.length < 50) {
+      const searchTracksRes = await deezerFetch(`/search/track?q=artist:"${encodeURIComponent(realArtistName)}"&limit=100`);
+      const moreTracks = (searchTracksRes.data || []).filter(t => t.preview && t.preview !== '');
+      const existingIds = new Set(tracks.map(t => t.id));
+      for (const t of moreTracks) {
+        if (!existingIds.has(t.id)) {
+          tracks.push(t);
+          existingIds.add(t.id);
+        }
+      }
+    }
+
+    const mapped = tracks.map(t => ({
+      id: t.id,
+      title: t.title_short || t.title,
+      artist: t.artist?.name || realArtistName,
+      artistPhoto: artistPhoto,
+      album: t.album?.title,
+      cover: t.album?.cover_medium || t.album?.cover,
+      coverBig: t.album?.cover_big || t.album?.cover_medium,
+      preview: t.preview,
+      duration: t.duration,
+      source: 'deezer',
+    }));
+
+    trackCache.set(cacheKey, { data: mapped, time: Date.now() });
+    return mapped;
+  } catch (err) {
+    console.error(`[Discography] Error for "${artistName}":`, err.message);
+    return await searchTracks(artistName, limit);
+  }
 }
 
 /**
@@ -726,6 +788,43 @@ async function getRandomTracks(playlistKey, count = 10) {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled.slice(0, Math.min(count, shuffled.length));
+  }
+
+  // Dynamic 100% Artist playlist loader
+  if (playlistKey.startsWith('100-')) {
+    const artistSlug = playlistKey.replace('100-', '');
+    const ARTIST_MAP = {
+      'jul': 'Jul',
+      'ninho': 'Ninho',
+      'booba': 'Booba',
+      'gazo': 'Gazo',
+      'aya': 'Aya Nakamura',
+      'damso': 'Damso',
+      'drake': 'Drake',
+      'the-weeknd': 'The Weeknd',
+      'celine': 'Céline Dion',
+      'daft-punk': 'Daft Punk',
+      'michael-jackson': 'Michael Jackson',
+      'eminem': 'Eminem',
+      'tiakola': 'Tiakola',
+      'plk': 'PLK',
+      'sdm': 'SDM',
+      'werenoi': 'Werenoi',
+      'sch': 'SCH',
+      'pnl': 'PNL',
+      'nekfeu': 'Nekfeu',
+      'hamza': 'Hamza',
+    };
+    const artistName = ARTIST_MAP[artistSlug] || artistSlug.replace('-', ' ');
+    const discography = await getArtistDiscography(artistName, 100);
+    if (discography.length > 0) {
+      const shuffled = [...discography];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, Math.min(count, shuffled.length));
+    }
   }
 
   const queries = PLAYLIST_QUERIES[playlistKey] || PLAYLIST_QUERIES['mix'];
@@ -957,6 +1056,7 @@ function createCustomPlaylist({ name, description, emoji, tracks }) {
 module.exports = {
   searchTracks,
   getRandomTracks,
+  getArtistDiscography,
   getSpotifyTopTracks,
   spotifySearch,
   getAvailablePlaylists,

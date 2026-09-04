@@ -491,6 +491,19 @@
 
     if (track) {
       const coverBig = track.coverBig || track.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80';
+      const artistPhoto = track.artistPhoto || coverBig;
+      const artistName = track.cleanArtist || track.artist || 'Artiste inconnu';
+      const trackTitle = track.cleanTitle || track.title || 'Titre';
+
+      // 🎵 Visuel officiel Mukiz : photo d'artiste et cartouche bleu électrique
+      const revealPhoto = $('#g-reveal-artist-photo');
+      const pillArtist = $('#re-pill-artist');
+      const pillTitle = $('#re-pill-title');
+      if (revealPhoto) revealPhoto.src = artistPhoto;
+      if (pillArtist) pillArtist.textContent = artistName.toUpperCase();
+      if (pillTitle) pillTitle.textContent = trackTitle.toUpperCase();
+
+      // Éléments de repli
       const cCover = $('#g-correct-cover');
       const cArtist = $('#g-correct-artist');
       const cTitle = $('#g-correct-title');
@@ -498,8 +511,8 @@
       const featName = $('#re-feat-name');
 
       if (cCover) cCover.src = coverBig;
-      if (cArtist) cArtist.textContent = track.cleanArtist || track.artist || 'Artiste inconnu';
-      if (cTitle) cTitle.textContent = track.cleanTitle || track.title || 'Titre';
+      if (cArtist) cArtist.textContent = artistName;
+      if (cTitle) cTitle.textContent = trackTitle;
 
       // Badge Feat
       if (featBadge && featName) {
