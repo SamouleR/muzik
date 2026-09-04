@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muzik — Blind Test Musical Multijoueur</title>
+  <meta name="description" content="Joue au Blind Test musical en temps réel avec tes amis ! Devine l'artiste et le titre le plus vite possible.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+</head>
+<body>
+  <!-- ═══════════════ GLOBAL HEADER BAR ═══════════════ -->
+  <header id="app-header" class="app-header">
+    <div class="header-left">
+      <a href="#" id="header-logo" class="header-logo">
+        <span class="logo-emoji">🎵</span>
+        <span class="logo-name">Muzik</span>
+      </a>
+    </div>
+    <nav class="header-nav" id="header-nav">
+      <a href="#" class="nav-link active" data-nav="accueil"><span class="nav-icon">🏠</span> Accueil</a>
+      <a href="#" class="nav-link" data-nav="playlists"><span class="nav-icon">🎧</span> Playlists</a>
+    </nav>
+    <div class="header-right">
+      <div class="online-badge" id="online-badge">
+        <span class="online-dot"></span>
+        <span id="online-count">0</span> joueurs
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════ SIDEBAR (mobile) ═══════════════ -->
+  <aside id="sidebar" class="sidebar">
+    <a href="#" class="sidebar-link active" data-nav="accueil"><span>🏠</span> Accueil</a>
+    <a href="#" class="sidebar-link" data-nav="playlists"><span>🎧</span> Playlists</a>
+  </aside>
+
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <main class="main-content">
+
+    <!-- ═══ VIEW: HOME / ACCUEIL ═══ -->
+    <section id="view-home" class="view active">
+      <!-- Jouer entre amis -->
+      <div class="card card-hero">
+        <div class="hero-illustration">
+          <div class="hero-chars">🎤🎧🎵</div>
+        </div>
+        <div class="hero-content">
+          <h2 class="hero-title">Jouer entre amis</h2>
+          <div class="join-input-wrapper">
+            <input type="text" id="join-code-input" placeholder="Rejoindre avec un code (ex : 750281)" maxlength="6" autocomplete="off">
+            <button id="btn-scan-qr" class="btn-icon-only" title="Scanner un QR code">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><path d="M20 14v3h-3"/><path d="M20 20h-3"/></svg>
+            </button>
+          </div>
+          <div class="hero-divider"><span>ou</span></div>
+          <div class="pseudo-row">
+            <input type="text" id="player-name" placeholder="Ton pseudo" maxlength="20" autocomplete="off">
+          </div>
+          <button id="btn-create" class="btn btn-yellow btn-block">Créer une partie</button>
+        </div>
+      </div>
+
+      <!-- Parties en direct -->
+      <div class="section-header">
+        <h3>Parties en direct <span class="live-dot">●</span></h3>
+      </div>
+      <div id="live-games" class="live-games-list">
+        <div class="empty-state">Aucune partie en cours</div>
+      </div>
+
+      <!-- Modes de jeu -->
+      <div class="game-modes-grid">
+        <div class="mode-card mode-battle" id="btn-mode-battle">
+          <div class="mode-card-illustration">⚔️</div>
+          <div class="mode-card-body">
+            <h3>Battle</h3>
+            <p>Défie d'autres joueurs, gagne des rangs, grimpe dans le classement</p>
+          </div>
+          <span class="mode-badge badge-live">Live</span>
+        </div>
+        <div class="mode-card mode-solo" id="btn-mode-solo">
+          <div class="mode-card-illustration">🎧</div>
+          <div class="mode-card-body">
+            <h3>Solo</h3>
+            <p>Joue sans pression, complète tes playlists en tapant la réponse</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arcade -->
+      <div class="section-header">
+        <h3>Arcade 🕹️</h3>
+      </div>
+      <div class="arcade-grid">
+        <div class="arcade-card">
+          <div class="arcade-icon">🎯</div>
+          <span>Bandiz</span>
+        </div>
+        <div class="arcade-card">
+          <div class="arcade-icon">💀</div>
+          <span>Survie</span>
+        </div>
+        <div class="arcade-card">
+          <div class="arcade-icon">📊</div>
+          <span>Rankiz</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: PLAYLISTS ═══ -->
+    <section id="view-playlists" class="view">
+      <div class="playlists-header">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="playlist-search" placeholder="Rechercher une playlist" autocomplete="off">
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">🔵 Explorer</button>
+          <button class="filter-tab" data-filter="popular">🔥 Populaires</button>
+          <button class="filter-tab" data-filter="new">✨ Nouveautés</button>
+        </div>
+      </div>
+
+      <div class="section-header"><h3>Parcourir par type 🔎</h3></div>
+      <div class="category-tags">
+        <button class="category-tag" data-cat="genres">🎵 Genres</button>
+        <button class="category-tag" data-cat="decades">📅 Décennies</button>
+        <button class="category-tag" data-cat="artists">🎤 Artistes</button>
+        <button class="category-tag" data-cat="themes">🎬 Thèmes</button>
+      </div>
+
+      <div class="section-header"><h3>Toutes les playlists 💿</h3></div>
+      <div id="playlists-grid" class="playlists-grid">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: LOBBY ═══ -->
+    <section id="view-lobby" class="view">
+      <div class="lobby-top-bar">
+        <button id="btn-leave-lobby" class="btn btn-ghost">← Retour</button>
+      </div>
+
+      <!-- QR Code & Invite Section -->
+      <div class="card card-invite">
+        <div class="invite-header">
+          <p>Invite tes amis à scanner le QR ou à entrer le code pour rejoindre la partie</p>
+          <div class="invite-code-row">
+            <span id="lobby-room-code" class="invite-code">------</span>
+            <button id="btn-copy-code" class="btn-icon-only" title="Copier">📋</button>
+            <canvas id="qr-canvas" class="qr-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="invite-actions">
+          <button id="btn-copy-link" class="invite-action-btn"><span>🔗</span> Copier le lien</button>
+          <button id="btn-share" class="invite-action-btn"><span>📤</span> Partager</button>
+          <button id="btn-whatsapp" class="invite-action-btn invite-whatsapp"><span>💬</span> WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="lobby-settings" class="card">
+        <h3 class="card-section-title">⚙️ Réglages de la partie</h3>
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label>Mode</label>
+            <select id="setting-mode" class="select-styled">
+              <option value="classique">🎵 Classique</option>
+              <option value="qcm">📝 QCM</option>
+              <option value="rapide">⚡ Rapide</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>Difficulté</label>
+            <select id="setting-difficulty" class="select-styled">
+              <option value="DEBUTANT">🟢 Débutant</option>
+              <option value="INTERMEDIAIRE">🟡 Intermédiaire</option>
+              <option value="EXPERT">🔴 Expert</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>Playlist</label>
+            <select id="setting-genre" class="select-styled">
+              <!-- Filled by JS -->
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>Manches</label>
+            <select id="setting-rounds" class="select-styled">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>Temps/manche</label>
+            <select id="setting-duration" class="select-styled">
+              <option value="10">10s</option>
+              <option value="15">15s</option>
+              <option value="20" selected>20s</option>
+              <option value="30">30s</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Players -->
+      <div class="card">
+        <h3 class="card-section-title">👥 Joueurs <span id="player-count-badge" class="count-badge">0</span></h3>
+        <ul id="lobby-players" class="lobby-players-list"></ul>
+      </div>
+
+      <button id="btn-start-game" class="btn btn-yellow btn-block btn-lg" style="display:none;">🚀 Lancer la partie !</button>
+      <div id="waiting-host" class="waiting-host" style="display:none;">
+        <span class="waiting-dot">●</span> En attente du lancement par l'hôte…
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: GAME ═══ -->
+    <section id="view-game" class="view">
+      <div class="game-top-bar">
+        <div class="round-indicator">
+          <span class="round-current" id="g-round">1</span>/<span id="g-total">10</span>
+        </div>
+        <div class="timer-wrapper">
+          <div class="timer-track">
+            <div class="timer-fill" id="g-timer-fill"></div>
+          </div>
+          <span class="timer-seconds" id="g-timer-text">20</span>
+        </div>
+      </div>
+
+      <!-- Mini Scoreboard -->
+      <div class="game-scoreboard" id="g-scoreboard"></div>
+
+      <!-- Audio Visual -->
+      <div class="game-audio-zone">
+        <div class="vinyl-wrapper" id="g-vinyl-wrapper">
+          <div class="vinyl-disc" id="g-vinyl">
+            <img id="g-cover" src="" alt="" class="vinyl-cover-img">
+          </div>
+        </div>
+        <canvas id="g-visualizer" class="game-visualizer"></canvas>
+      </div>
+
+      <!-- Answer Input -->
+      <div class="game-answer-zone" id="g-answer-zone">
+        <div class="answer-row">
+          <input type="text" id="g-answer" placeholder="Tape ta réponse…" autocomplete="off" class="answer-field">
+          <button id="g-submit" class="btn btn-yellow">Envoyer</button>
+        </div>
+        <div class="mic-row">
+          <button id="g-mic" class="mic-btn" title="Parle pour répondre">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+          </button>
+          <span id="g-speech-status" class="speech-label">Clique ou tape ta réponse</span>
+        </div>
+        <div id="g-speech-preview" class="speech-preview-text"></div>
+      </div>
+
+      <!-- Feedback overlay (correct/wrong) -->
+      <div id="g-feedback" class="game-feedback hidden">
+        <div class="feedback-popup">
+          <span id="g-fb-icon" class="fb-icon">✅</span>
+          <p id="g-fb-msg" class="fb-msg"></p>
+          <p id="g-fb-pts" class="fb-pts"></p>
+        </div>
+      </div>
+
+      <!-- Round End overlay -->
+      <div id="g-round-end" class="round-end-overlay hidden">
+        <div class="round-end-card card">
+          <h3>Résultat du round</h3>
+          <div class="correct-answer-row">
+            <img id="g-correct-cover" src="" alt="" class="correct-thumb">
+            <div>
+              <p id="g-correct-artist" class="correct-artist-name"></p>
+              <p id="g-correct-title" class="correct-track-name"></p>
+            </div>
+          </div>
+          <ul id="g-round-results" class="round-results"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: GAME OVER ═══ -->
+    <section id="view-gameover" class="view">
+      <canvas id="confetti-canvas" class="confetti-layer"></canvas>
+      <div class="gameover-content">
+        <h1 class="gameover-heading">🏆 Partie terminée !</h1>
+        <div class="card winner-highlight">
+          <div class="winner-crown">👑</div>
+          <p id="go-winner-name" class="winner-big-name"></p>
+          <p id="go-winner-score" class="winner-big-score"></p>
+        </div>
+        <div class="card">
+          <h3 class="card-section-title">📊 Classement final</h3>
+          <ol id="go-rankings" class="rankings-list"></ol>
+        </div>
+        <div class="gameover-btns">
+          <button id="go-replay" class="btn btn-yellow" style="display:none;">🔄 Rejouer</button>
+          <button id="go-home" class="btn btn-outline">🏠 Accueil</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════ OVERLAYS ═══════════════ -->
+  <div id="countdown-overlay" class="overlay-fullscreen hidden">
+    <div id="countdown-num" class="countdown-big">3</div>
+  </div>
+
+  <div id="loading-overlay" class="overlay-fullscreen hidden">
+    <div class="loader-spinner"></div>
+    <p id="loading-msg" class="loader-text">Chargement…</p>
+  </div>
+
+  <!-- ═══════════════ TOASTS ═══════════════ -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Hidden audio -->
+  <audio id="game-audio" crossorigin="anonymous" preload="auto"></audio>
+
+  <!-- Scripts -->
+  <script src="js/uiEffects.js"></script>
+  <script src="js/audioPlayer.js"></script>
+  <script src="js/speechInput.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
