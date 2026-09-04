@@ -36,6 +36,8 @@
     hintStage: 0,
     duckingEnabled: localStorage.getItem('muzik_ducking_enabled') !== 'false',
     isSpeaking: false,
+    roundEndInterval: null,
+    isRoundEndPaused: false,
   };
 
   // ═══════════════════════════════════════
@@ -477,7 +479,7 @@
     }
   }
 
-  function onRoundEnd(data) {
+  function onRoundEnd(data, isDemo = false) {
     stopRoundTimer();
     AudioPlayer.stop();
     SpeechInput.stopListening();
@@ -600,15 +602,28 @@
       }).join('');
     }
 
-    // Compte à rebours du round end (5s)
-    let reCountdown = 5;
+    // Compte à rebours du round end (8s en jeu, 30s en mode démo pour laisser le temps de contempler)
+    if (state.roundEndInterval) {
+      clearInterval(state.roundEndInterval);
+      state.roundEndInterval = null;
+    }
+    state.isRoundEndPaused = false;
+    let reCountdown = isDemo ? 30 : 8;
     const cdEl = $('#re-countdown');
+    const pauseBtn = $('#btn-pause-reveal');
+    if (pauseBtn) pauseBtn.textContent = '⏸️ Pause';
     if (cdEl) cdEl.textContent = reCountdown;
-    const cdInterval = setInterval(() => {
+
+    state.roundEndInterval = setInterval(() => {
+      if (state.isRoundEndPaused) return;
       reCountdown--;
       if (cdEl) cdEl.textContent = Math.max(0, reCountdown);
       if (reCountdown <= 0) {
-        clearInterval(cdInterval);
+        clearInterval(state.roundEndInterval);
+        state.roundEndInterval = null;
+        if (isDemo) {
+          $('#g-round-end')?.classList.add('hidden');
+        }
       }
     }, 1000);
 
@@ -627,6 +642,31 @@
     $('#g-feedback')?.classList.add('hidden');
     $('#g-hint-banner')?.classList.add('hidden');
     $('#g-round-end')?.classList.remove('hidden');
+  }
+
+  function triggerDemoReveal() {
+    const dummyResult = {
+      roundNumber: 1,
+      track: {
+        cleanArtist: 'NINHO',
+        cleanTitle: "GOUTTE D'EAU",
+        artist: 'Ninho',
+        title: "Goutte d'eau",
+        featArtist: null,
+        artistPhoto: 'https://e-cdns-images.dzcdn.net/images/artist/f1947b19280d9eb4f3d15daeeae5bc07/1000x1000-000000-80-0-0.jpg',
+        cover: 'https://e-cdns-images.dzcdn.net/images/cover/b43db026f39e31d4e0b04323e4ea3e61/500x500-000000-80-0-0.jpg',
+        coverBig: 'https://e-cdns-images.dzcdn.net/images/cover/b43db026f39e31d4e0b04323e4ea3e61/1000x1000-000000-80-0-0.jpg'
+      },
+      playerResults: [
+        { name: user.name || 'Invité', points: 850, isCorrect: true, streak: 3, streakLabel: '🔥 x3', streakBonus: 200, featDetected: false, totalScore: 850 },
+        { name: 'Alex_92', points: 720, isCorrect: true, streak: 1, featDetected: false, totalScore: 720 },
+        { name: 'Sarah_Music', points: 0, isCorrect: false, streak: 0, featDetected: false, totalScore: 450 }
+      ]
+    };
+
+    showView('view-game');
+    onRoundEnd({ result: dummyResult }, true /* isDemo */);
+    UIEffects.showToast('Démo Révélation Mukiz (Vinyle tournant + Ninho) affichée ! 🎬', 'success', 3000);
   }
 
   function onGameOver(data) {
@@ -701,11 +741,15 @@
     const target = $(`#${viewId}`);
     if (target) target.classList.add('active');
 
-    $$('.nav-link, .sidebar-link').forEach(link => {
+    $$('.sidebar-link, [data-nav]').forEach(link => {
       const navTarget = link.getAttribute('data-nav');
       if (viewId === 'view-home' && navTarget === 'accueil') {
         link.classList.add('active');
       } else if (viewId === 'view-playlists' && navTarget === 'playlists') {
+        link.classList.add('active');
+      } else if (viewId === 'view-shop' && navTarget === 'shop') {
+        link.classList.add('active');
+      } else if (viewId === 'view-quests' && navTarget === 'quests') {
         link.classList.add('active');
       } else {
         link.classList.remove('active');
@@ -1659,12 +1703,61 @@
         const target = item.getAttribute('data-nav');
         if (target === 'accueil') showView('view-home');
         if (target === 'playlists') showView('view-playlists');
+        if (target === 'shop') showView('view-shop');
+        if (target === 'quests') showView('view-quests');
+        if (target === 'settings') openModal('modal-settings');
       });
     });
 
-    $('#header-logo')?.addEventListener('click', (e) => {
+    $('#sidebar-logo')?.addEventListener('click', (e) => {
       e.preventDefault();
       showView('view-home');
+    });
+
+    $('#sb-link-settings')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('modal-settings');
+    });
+
+    // Démo Révélation Mukiz (Mockup Vinyle + Portrait Artiste + Cartouche Bleu)
+    $('#btn-demo-reveal')?.addEventListener('click', triggerDemoReveal);
+    $('#btn-home-demo-reveal')?.addEventListener('click', triggerDemoReveal);
+
+    // Contrôles du Round End (Pause & Fermer)
+    $('#btn-pause-reveal')?.addEventListener('click', () => {
+      state.isRoundEndPaused = !state.isRoundEndPaused;
+      const btn = $('#btn-pause-reveal');
+      if (btn) btn.textContent = state.isRoundEndPaused ? '▶️ Reprendre' : '⏸️ Pause';
+      UIEffects.showToast(state.isRoundEndPaused ? 'Révélation mise en pause ⏸️' : 'Chronomètre repris ▶️', 'info', 1500);
+    });
+
+    $('#btn-close-reveal')?.addEventListener('click', () => {
+      if (state.roundEndInterval) {
+        clearInterval(state.roundEndInterval);
+        state.roundEndInterval = null;
+      }
+      $('#g-round-end')?.classList.add('hidden');
+    });
+
+    // Quêtes du jour & Boutique actions
+    $('#btn-claim-daily')?.addEventListener('click', () => {
+      user.coins += 10;
+      saveUserProfile();
+      updateProfileUI();
+      UIEffects.showToast('🪙 +10 pièces récupérées avec succès !', 'success', 2000);
+      const btn = $('#btn-claim-daily');
+      if (btn) {
+        btn.textContent = '✓ Récupéré';
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+      }
+    });
+
+    $('#btn-buy-coins')?.addEventListener('click', () => {
+      user.coins += 250;
+      saveUserProfile();
+      updateProfileUI();
+      UIEffects.showToast('🪙 Pack Découverte : +250 pièces ajoutées !', 'success', 2500);
     });
 
     // Profile pill & Settings triggers

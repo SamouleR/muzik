@@ -13,57 +13,105 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 </head>
 <body>
-  <!-- ═══════════════ GLOBAL HEADER BAR ═══════════════ -->
-  <header id="app-header" class="app-header">
-    <div class="header-left">
-      <a href="#" id="header-logo" class="header-logo">
-        <span class="logo-emoji">🎵</span>
-        <span class="logo-name">Muzik</span>
+  <!-- ═══════════════ PERMANENT MUKIZ SIDEBAR ═══════════════ -->
+  <aside id="sidebar" class="mukiz-sidebar">
+    <!-- Top Mukiz Logo -->
+    <a href="#" class="sidebar-logo" id="sidebar-logo">
+      <span class="sidebar-logo-text">Mukiz</span>
+    </a>
+
+    <!-- Navigation Menu Items -->
+    <nav class="sidebar-menu" id="sidebar-nav">
+      <a href="#" class="sidebar-link active" data-nav="accueil">
+        <span class="sb-icon">🏠</span>
+        <span class="sb-label">Accueil</span>
+      </a>
+      <a href="#" class="sidebar-link" data-nav="playlists">
+        <span class="sb-icon">☰</span>
+        <span class="sb-label">Playlists</span>
+      </a>
+      <a href="#" class="sidebar-link" data-nav="shop">
+        <span class="sb-icon">🏬</span>
+        <span class="sb-label">Boutique</span>
+      </a>
+      <a href="#" class="sidebar-link" data-nav="quests">
+        <span class="sb-icon">🏋️</span>
+        <span class="sb-label">Défis du jour</span>
+        <span class="sb-badge-count">1</span>
+      </a>
+      <a href="#" class="sidebar-link" data-nav="settings" id="sb-link-settings">
+        <span class="sb-icon">⚙️</span>
+        <span class="sb-label">Paramètres</span>
+      </a>
+    </nav>
+
+    <!-- Bottom Social Links -->
+    <div class="sidebar-footer">
+      <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" class="sb-social-btn" title="Discord">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+      </a>
+      <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="sb-social-btn" title="TikTok">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49c1.94-1.94 1.83-4.93 1.83-4.93v-6.2a8.16 8.16 0 0 0 4.77 1.52v-3.4c-.28 0-.56-.03-.83-.08z"/></svg>
+      </a>
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="sb-social-btn" title="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
       </a>
     </div>
-    <nav class="header-nav" id="header-nav">
-      <a href="#" class="nav-link active" data-nav="accueil"><span class="nav-icon">🏠</span> Accueil</a>
-      <a href="#" class="nav-link" data-nav="playlists"><span class="nav-icon">🎧</span> Playlists</a>
-    </nav>
+  </aside>
+
+  <!-- ═══════════════ CLEAN TOP STATUS BAR ═══════════════ -->
+  <header id="app-header" class="app-header">
+    <div class="header-left">
+      <!-- Demo button to preview the vinyl + portrait reveal anytime -->
+      <button id="btn-demo-reveal" class="btn-demo-reveal" title="Voir la révélation Mukiz (Mockup Vinyle + Portrait)">
+        <span>💿</span> Tester Révélation Mockup
+      </button>
+    </div>
+
     <div class="header-right">
-      <div class="coins-badge" id="header-coins-badge" title="Mes pièces Muzik">
+      <!-- 1. Score (Pièces / Coins) -->
+      <div class="coins-badge-mukiz" id="header-coins-badge" title="Mes pièces Muzik">
         <span class="coin-icon">🪙</span>
-        <span id="user-coins">150</span>
+        <span id="user-coins">125</span>
       </div>
-      <div class="online-badge" id="online-badge">
+
+      <!-- 2. Nombre de personnes en ligne -->
+      <div class="online-badge-mukiz" id="online-badge" title="Joueurs en ligne">
         <span class="online-dot"></span>
-        <span id="online-count">1</span> joueurs
+        <span id="online-count">186</span> joueurs
       </div>
-      <!-- Volume quick control -->
+
+      <!-- 3. Notification Bell -->
+      <button id="btn-notif-bell" class="btn-icon-mukiz" title="Notifications">
+        🔔
+      </button>
+
+      <!-- 4. Son / Volume -->
       <div class="volume-widget-wrapper" id="volume-widget">
-        <button id="btn-volume-control" class="btn-icon-round" title="Régler le volume">
+        <button id="btn-volume-control" class="btn-icon-mukiz" title="Régler le son">
           <span id="volume-icon">🔊</span>
         </button>
         <div id="volume-popup" class="volume-popup hidden">
           <div class="volume-popup-inner">
-            <span class="vol-label">Volume</span>
+            <span class="vol-label">Volume sonore</span>
             <input type="range" id="volume-slider" min="0" max="100" value="75" class="vol-range">
             <span id="volume-percent" class="vol-val">75%</span>
           </div>
         </div>
       </div>
-      <!-- Settings modal trigger -->
-      <button id="btn-open-settings" class="btn-icon-round" title="Paramètres">
+
+      <!-- 5. Roue Paramètre -->
+      <button id="btn-open-settings" class="btn-icon-mukiz" title="Paramètres">
         ⚙️
       </button>
-      <!-- User profile pill / Auth trigger -->
-      <div class="profile-pill" id="btn-profile-pill" title="Mon Profil / Connexion">
+
+      <!-- 6. Nom Login / Profil -->
+      <div class="profile-pill-mukiz" id="btn-profile-pill" title="Mon Profil / Connexion">
         <span class="profile-avatar" id="header-avatar">🦊</span>
         <span class="profile-name" id="header-player-name">Invité</span>
       </div>
     </div>
   </header>
-
-  <!-- ═══════════════ SIDEBAR (mobile) ═══════════════ -->
-  <aside id="sidebar" class="sidebar">
-    <a href="#" class="sidebar-link active" data-nav="accueil"><span>🏠</span> Accueil</a>
-    <a href="#" class="sidebar-link" data-nav="playlists"><span>🎧</span> Playlists</a>
-  </aside>
 
   <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
   <main class="main-content">
@@ -88,6 +136,9 @@
             <input type="text" id="player-name" placeholder="Ton pseudo" maxlength="20" autocomplete="off">
           </div>
           <button id="btn-create" class="btn btn-yellow btn-block">Créer une partie</button>
+          <button id="btn-home-demo-reveal" class="btn btn-demo-banner" style="margin-top: 12px; width: 100%;">
+            <span>💿</span> Tester la Révélation Mukiz (Vinyle + Portrait Artiste)
+          </button>
         </div>
       </div>
 
@@ -189,6 +240,128 @@
       <div class="section-header"><h3>For you 💖 & Toutes les playlists 💿</h3></div>
       <div id="playlists-grid" class="playlists-grid">
         <!-- Filled by JS with rich Mukiz cards -->
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: DÉFIS DU JOUR (QUESTS) ═══ -->
+    <section id="view-quests" class="view">
+      <div class="quests-hero-character">
+        <div class="quests-mascot-box">
+          <div class="quests-mascot-emoji">⚡</div>
+          <div class="quests-mascot-calendar">📅</div>
+        </div>
+      </div>
+
+      <!-- Quêtes du jour -->
+      <div class="card quests-container-card">
+        <div class="quests-header-row">
+          <h3 class="quests-title">Quêtes du jour</h3>
+          <span class="quests-timer">44:12 restant</span>
+        </div>
+
+        <div class="quests-streak-card">
+          <p class="streak-banner-title">Connecte-toi chaque jour pour faire grimper ta série et gagner plus de pièces</p>
+          <div class="streak-progress-stepper">
+            <div class="streak-step completed"><span class="step-icon">⭐</span><span class="step-coins">5</span></div>
+            <div class="streak-step completed current"><span class="step-icon">⭐</span><span class="step-coins">10</span></div>
+            <div class="streak-step"><span class="step-icon">⚪</span><span class="step-coins">15</span></div>
+            <div class="streak-step"><span class="step-icon">⚪</span><span class="step-coins">20</span></div>
+            <div class="streak-step"><span class="step-icon">⚪</span><span class="step-coins">25</span></div>
+            <div class="streak-step"><span class="step-icon">⚪</span><span class="step-coins">30</span></div>
+            <div class="streak-step"><span class="step-icon">⚪</span><span class="step-coins">35</span></div>
+          </div>
+          <div class="streak-bottom-row">
+            <span class="streak-current-label">Série actuelle : <b>2</b></span>
+            <button class="btn btn-sm btn-claim" id="btn-claim-daily">🪙 10 Récupérer</button>
+          </div>
+        </div>
+
+        <div class="quest-item-row">
+          <div class="quest-item-icon">🎧</div>
+          <div class="quest-item-content">
+            <div class="quest-item-name">Trouve un morceau en mode Solo</div>
+            <div class="quest-bar"><div class="quest-bar-fill" style="width: 0%;"></div></div>
+            <span class="quest-ratio">0/1</span>
+          </div>
+          <div class="quest-reward-pill">🪙 15</div>
+          <button class="quest-nav-arrow" data-nav="accueil">›</button>
+        </div>
+
+        <div class="quest-item-row">
+          <div class="quest-item-icon">⚔️</div>
+          <div class="quest-item-content">
+            <div class="quest-item-name">Gagne un duel aujourd'hui</div>
+            <div class="quest-bar"><div class="quest-bar-fill" style="width: 0%;"></div></div>
+            <span class="quest-ratio">0/1</span>
+          </div>
+          <div class="quest-reward-pill">🪙 15</div>
+          <button class="quest-nav-arrow" data-nav="accueil">›</button>
+        </div>
+      </div>
+
+      <!-- Quêtes hebdomadaires -->
+      <div class="card quests-container-card">
+        <div class="quests-header-row">
+          <h3 class="quests-title">Quêtes hebdomadaires</h3>
+          <span class="quests-timer">2j restant</span>
+        </div>
+
+        <div class="quest-item-row">
+          <div class="quest-item-icon">🎵</div>
+          <div class="quest-item-content">
+            <div class="quest-item-name">Joue des duels sur 3 playlists différentes</div>
+            <div class="quest-bar"><div class="quest-bar-fill" style="width: 33%;"></div></div>
+            <span class="quest-ratio">1/3</span>
+          </div>
+          <div class="quest-reward-pill">🪙 40</div>
+          <button class="quest-nav-arrow" data-nav="playlists">›</button>
+        </div>
+
+        <div class="quest-item-row">
+          <div class="quest-item-icon">👑</div>
+          <div class="quest-item-content">
+            <div class="quest-item-name">Monte d'un palier sur n'importe quelle playlist en mode battle</div>
+            <div class="quest-bar"><div class="quest-bar-fill" style="width: 0%;"></div></div>
+            <span class="quest-ratio">0/1</span>
+          </div>
+          <div class="quest-reward-pill">🪙 50</div>
+          <button class="quest-nav-arrow" data-nav="accueil">›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: BOUTIQUE (SHOP) ═══ -->
+    <section id="view-shop" class="view">
+      <div class="card shop-hero-card">
+        <h2>Boutique Muzik 🏬</h2>
+        <p>Débloque des packs de pièces, des avatars rares et des boosters de streak !</p>
+      </div>
+
+      <div class="shop-grid-mukiz">
+        <div class="card shop-product-card">
+          <div class="shop-item-emoji">🪙</div>
+          <h4>Pack Découverte</h4>
+          <p class="shop-desc">+250 pièces Muzik</p>
+          <button class="btn btn-yellow btn-sm" id="btn-buy-coins">Gratuit</button>
+        </div>
+        <div class="card shop-product-card">
+          <div class="shop-item-emoji">🦁</div>
+          <h4>Avatar Lion Doré</h4>
+          <p class="shop-desc">Avatar légendaire animé</p>
+          <button class="btn btn-purple btn-sm">🪙 200</button>
+        </div>
+        <div class="card shop-product-card">
+          <div class="shop-item-emoji">🦄</div>
+          <h4>Avatar Licorne VIP</h4>
+          <p class="shop-desc">Effet paillettes en partie</p>
+          <button class="btn btn-purple btn-sm">🪙 350</button>
+        </div>
+        <div class="card shop-product-card">
+          <div class="shop-item-emoji">🔥</div>
+          <h4>Booster Win Streak</h4>
+          <p class="shop-desc">Double les points de série</p>
+          <button class="btn btn-yellow btn-sm">🪙 150</button>
+        </div>
       </div>
     </section>
 
@@ -391,7 +564,11 @@
         <div class="round-end-card-mukiz">
           <div class="round-end-header-bar">
             <span class="round-end-tag">RÉSULTAT DU ROUND <span id="re-round-num">1</span></span>
-            <span class="round-end-timer-badge">Prochain round dans <b id="re-countdown">5</b>s</span>
+            <div class="re-header-controls">
+              <span class="round-end-timer-badge" id="re-timer-badge">Prochain round dans <b id="re-countdown">8</b>s</span>
+              <button class="re-control-btn" id="btn-pause-reveal" title="Mettre en pause le chronomètre">⏸️ Pause</button>
+              <button class="re-control-btn btn-close-cross" id="btn-close-reveal" title="Fermer">&times;</button>
+            </div>
           </div>
 
           <!-- 🎵 COMPOSITION OFFICIELLE MUKIZ (VINYLE TOURNANT + CARTE PORTRAIT + PILL BLEU) -->

@@ -46,8 +46,8 @@
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
 
-  --header-h: 56px;
-  --sidebar-w: 200px;
+  --header-h: 64px;
+  --sidebar-w: 220px;
 }
 
 /* ─── Reset ─── */
@@ -63,82 +63,117 @@ body {
 }
 
 /* ═══════════════════════════════════════
-   HEADER
+   HEADER (STREAMLINED MUKIZ TOP STATUS BAR)
    ═══════════════════════════════════════ */
 .app-header {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: var(--sidebar-w);
+  right: 0;
   height: var(--header-h);
-  background: var(--bg-header);
-  background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
+  background: transparent;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  z-index: 100;
-  box-shadow: 0 2px 10px rgba(58, 12, 163, 0.25);
+  justify-content: space-between;
+  padding: 0 28px;
+  z-index: 90;
+  backdrop-filter: blur(8px);
 }
 
-.header-left { display: flex; align-items: center; }
-
-.header-logo {
+.header-left {
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-demo-reveal {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  text-decoration: none;
-  color: var(--yellow);
-}
-
-.logo-emoji { font-size: 1.6rem; }
-
-.logo-name {
-  font-family: var(--font-display);
-  font-size: 1.7rem;
-  font-weight: 900;
-  font-style: italic;
-  text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-}
-
-.header-nav {
-  display: flex;
-  gap: 4px;
-  margin-left: 32px;
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  color: rgba(255,255,255,0.75);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-radius: var(--radius-md);
-  transition: all 0.2s;
-}
-
-.nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
-.nav-link.active { background: rgba(255,255,255,0.15); color: white; }
-.nav-icon { font-size: 1.1rem; }
-
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-
-.online-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.15);
-  padding: 6px 14px;
+  background: linear-gradient(135deg, #ffe600, #ffd000);
+  color: #181c2e;
+  border: 2px solid #181c2e;
   border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #181c2e;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-demo-reveal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 #181c2e;
+}
+
+.btn-demo-banner {
+  background: #ffe600;
+  color: #181c2e;
+  border: 2px solid #181c2e;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #181c2e;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-demo-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #181c2e;
+  background: #ffd000;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coins-badge-mukiz {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffe600;
+  border: 2px solid #181c2e;
+  border-radius: var(--radius-full);
+  padding: 5px 14px;
+  color: #181c2e;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  box-shadow: 0 2px 0 #181c2e;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.coins-badge-mukiz:hover {
+  transform: scale(1.04);
+}
+
+.online-badge-mukiz {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid white;
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
   color: white;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 800;
+  backdrop-filter: blur(4px);
 }
 
 .online-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--green);
+  background: #06d6a0;
   animation: onlinePulse 2s ease-in-out infinite;
 }
 
@@ -147,40 +182,162 @@ body {
   50% { opacity: 0.4; }
 }
 
+.btn-icon-mukiz {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.btn-icon-mukiz:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.profile-pill-mukiz {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid white;
+  border-radius: var(--radius-full);
+  padding: 4px 12px 4px 6px;
+  color: white;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.profile-pill-mukiz:hover {
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.35);
+}
+
 /* ═══════════════════════════════════════
-   SIDEBAR (desktop)
+   MUKIZ SIDEBAR (PERMANENT DESKTOP)
    ═══════════════════════════════════════ */
-.sidebar {
+.mukiz-sidebar {
   position: fixed;
-  top: var(--header-h);
+  top: 0;
   left: 0;
   bottom: 0;
   width: var(--sidebar-w);
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-light);
-  padding: 16px 10px;
-  z-index: 50;
+  background: #a4c2fb;
+  border-right: 2px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  z-index: 100;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  padding: 22px 20px 24px 20px;
+  text-decoration: none;
+}
+
+.sidebar-logo-text {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #ffe600;
+  -webkit-text-stroke: 2px #181c2e;
+  text-shadow: 2px 3px 0 #181c2e;
+  letter-spacing: -1px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 14px;
+  flex: 1;
 }
 
 .sidebar-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  color: var(--text-secondary);
+  gap: 12px;
+  padding: 10px 16px;
+  color: #181c2e;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-radius: var(--radius-md);
-  transition: all 0.2s;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.96rem;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
-.sidebar-link:hover { background: rgba(67, 97, 238, 0.08); color: var(--blue-primary); }
-.sidebar-link.active { background: var(--blue-primary); color: white; }
-.sidebar-link span { font-size: 1.2rem; }
+.sidebar-link .sb-icon {
+  font-size: 1.25rem;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.45);
+  color: #0f172a;
+}
+
+.sidebar-link.active {
+  background: #6ea8fe;
+  border: 2px solid #181c2e;
+  color: #181c2e;
+  box-shadow: 0 3px 0 #181c2e;
+  font-weight: 900;
+}
+
+.sb-badge-count {
+  margin-left: auto;
+  background: #ff3b30;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1.5px solid #181c2e;
+}
+
+.sidebar-footer {
+  padding: 18px 14px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sb-social-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 2px solid #181c2e;
+  background: #ffffff;
+  box-shadow: 0 2px 0 #181c2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #181c2e;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.sb-social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 #181c2e;
+  background: #f0f4ff;
+}
 
 /* ═══════════════════════════════════════
    MAIN CONTENT
@@ -190,7 +347,7 @@ body {
   margin-left: var(--sidebar-w);
   padding: 24px;
   min-height: calc(100vh - var(--header-h));
-  max-width: 900px;
+  max-width: 1050px;
 }
 
 /* ─── Views ─── */
@@ -3223,6 +3380,348 @@ input:checked + .slider.round:before {
 @keyframes pulseGlow {
   0% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.4); }
   100% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.8); }
+}
+
+/* ═══════════════════════════════════════
+   ROUND END REVEAL CONTROLS
+   ═══════════════════════════════════════ */
+.re-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.re-control-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.re-control-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.re-control-btn.btn-close-cross {
+  font-size: 1.1rem;
+  padding: 2px 8px;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════
+   QUESTS (DÉFIS DU JOUR) MUKIZ STYLES
+   ═══════════════════════════════════════ */
+.quests-hero-character {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.quests-mascot-box {
+  width: 130px;
+  height: 110px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #3a86ff, #6ea8fe);
+  border: 3px solid #181c2e;
+  box-shadow: 0 6px 0 #181c2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.quests-mascot-emoji {
+  font-size: 3rem;
+  animation: bounceSlow 2s infinite ease-in-out;
+}
+
+.quests-mascot-calendar {
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  font-size: 1.8rem;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #181c2e;
+  padding: 2px 4px;
+  box-shadow: 0 2px 0 #181c2e;
+}
+
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.quests-container-card {
+  margin-bottom: 24px;
+}
+
+.quests-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.quests-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #181c2e;
+}
+
+.quests-timer {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.quests-streak-card {
+  background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+  border: 2px solid #181c2e;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.streak-banner-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.streak-progress-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  position: relative;
+  padding: 0 10px;
+}
+
+.streak-progress-stepper::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  right: 30px;
+  height: 4px;
+  background: #cbd5e1;
+  z-index: 1;
+}
+
+.streak-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.streak-step .step-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #181c2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.streak-step.completed .step-icon {
+  background: #ffe600;
+  border-color: #181c2e;
+}
+
+.streak-step .step-coins {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.streak-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 10px;
+}
+
+.streak-current-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.btn-claim {
+  background: #ffe600;
+  color: #181c2e;
+  border: 2px solid #181c2e;
+  font-weight: 800;
+  box-shadow: 0 2px 0 #181c2e;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.quest-item-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.quest-item-row:hover {
+  border-color: #3a86ff;
+}
+
+.quest-item-icon {
+  font-size: 1.8rem;
+}
+
+.quest-item-content {
+  flex: 1;
+}
+
+.quest-item-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #181c2e;
+  margin-bottom: 6px;
+}
+
+.quest-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.quest-bar-fill {
+  height: 100%;
+  background: #3a86ff;
+  border-radius: 999px;
+}
+
+.quest-ratio {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.quest-reward-pill {
+  background: #fef08a;
+  border: 2px solid #181c2e;
+  color: #181c2e;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.quest-nav-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #181c2e;
+  background: white;
+  color: #181c2e;
+  font-size: 1.3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #181c2e;
+  transition: transform 0.15s;
+}
+
+.quest-nav-arrow:hover {
+  transform: translateX(2px);
+}
+
+/* ═══════════════════════════════════════
+   SHOP (BOUTIQUE) MUKIZ STYLES
+   ═══════════════════════════════════════ */
+.shop-hero-card {
+  text-align: center;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #f0fdf4, #dbeafe);
+}
+
+.shop-hero-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #181c2e;
+  margin-bottom: 6px;
+}
+
+.shop-hero-card p {
+  color: #475569;
+  font-weight: 600;
+}
+
+.shop-grid-mukiz {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.shop-product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  gap: 8px;
+  border-radius: var(--radius-lg);
+  transition: transform 0.2s;
+}
+
+.shop-product-card:hover {
+  transform: translateY(-4px);
+}
+
+.shop-item-emoji {
+  font-size: 2.8rem;
+  margin-bottom: 4px;
+}
+
+.shop-product-card h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #181c2e;
+}
+
+.shop-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 /* ─── Utils ─── */
