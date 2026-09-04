@@ -1,16 +1,28 @@
 /**
  * MUZIK — Main Application Client (Mukiz Inspired)
- * State management, WebSocket communication, UI routing, Game loops
+ * State management, WebSocket communication, UI routing, Game loops,
+ * OAuth Auth (Google/Apple/Facebook/Guest), Volume Ducking & Dynamic Hints.
  */
 ;(function () {
   'use strict';
 
   // ═══════════════════════════════════════
-  // STATE
+  // USER PROFILE & AUTH STATE
+  // ═══════════════════════════════════════
+  const AVATARS = ['🦊', '🐼', '🐯', '🦁', '🐵', '🐸', '🐙', '🦄', '🐨', '🐺', '🦉', '🐱'];
+
+  const user = {
+    name: localStorage.getItem('muzik_player_name') || 'Invité ' + Math.floor(100 + Math.random() * 900),
+    avatar: localStorage.getItem('muzik_player_avatar') || '🦊',
+    provider: localStorage.getItem('muzik_auth_provider') || 'guest',
+    coins: parseInt(localStorage.getItem('muzik_coins') || '150', 10),
+  };
+
+  // ═══════════════════════════════════════
+  // APPLICATION STATE
   // ═══════════════════════════════════════
   const state = {
     socketId: null,
-    playerName: localStorage.getItem('muzik_player_name') || '',
     ws: null,
     room: null,
     isHost: false,
@@ -20,6 +32,10 @@
     playlists: [],
     currentView: 'view-home',
     onlineCount: 1,
+    currentRoundData: null,
+    hintStage: 0,
+    duckingEnabled: localStorage.getItem('muzik_ducking_enabled') !== 'false',
+    isSpeaking: false,
   };
 
   // ═══════════════════════════════════════
@@ -27,6 +43,128 @@
   // ═══════════════════════════════════════
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
+
+  // ═══════════════════════════════════════
+  // USER PROFILE MANAGEMENT
+  // ═══════════════════════════════════════
+  function saveUserProfile() {
+    localStorage.setItem('muzik_player_name', user.name);
+    localStorage.setItem('muzik_player_avatar', user.avatar);
+    localStorage.setItem('muzik_auth_provider', user.provider);
+    localStorage.setItem('muzik_coins', String(user.coins));
+    updateProfileUI();
+  }
+
+  function addCoins(amount) {
+    user.coins += amount;
+    localStorage.setItem('muzik_coins', String(user.coins));
+    updateProfileUI();
+    UIEffects.scorePopup(`+${amount} 🪙`, true);
+  }
+
+  function updateProfileUI() {
+    // Header
+    const coinsEl = $('#user-coins');
+    if (coinsEl) coinsEl.textContent = user.coins;
+
+    const headerAvatar = $('#header-avatar');
+    if (headerAvatar) headerAvatar.textContent = user.avatar;
+
+    const headerName = $('#header-player-name');
+    if (headerName) headerName.textContent = user.name;
+
+    // Home input
+    const homeInput = $('#player-name');
+    if (homeInput && !homeInput.value) homeInput.value = user.name;
+
+    // Settings
+    const setAvatar = $('#settings-avatar');
+    if (setAvatar) setAvatar.textContent = user.avatar;
+
+    const setNameInput = $('#settings-name-input');
+    if (setNameInput) setNameInput.value = user.name;
+
+    const setProvider = $('#settings-provider-badge');
+    if (setProvider) {
+      const labels = {
+        google: '🟢 Connecté avec Google',
+        apple: '⚫ Connecté avec Apple',
+        facebook: '🔵 Connecté avec Facebook',
+        guest: '⚪ Mode Invité',
+      };
+      setProvider.textContent = labels[user.provider] || 'Mode Invité';
+    }
+
+    // Avatar picker in settings
+    renderAvatarPicker();
+  }
+
+  function renderAvatarPicker() {
+    const container = $('#avatar-choices');
+    if (!container) return;
+
+    container.innerHTML = AVATARS.map(av => `
+      <button class="avatar-choice-btn ${av === user.avatar ? 'active' : ''}" data-avatar="${av}">
+        ${av}
+      </button>
+    `).join('');
+
+    container.querySelectorAll('.avatar-choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        user.avatar = btn.getAttribute('data-avatar');
+        saveUserProfile();
+      });
+    });
+  }
+
+  function login(provider) {
+    user.provider = provider;
+
+    if (provider === 'google') {
+      user.name = user.name.startsWith('Invité') ? 'Alex Google' : user.name;
+      user.avatar = '🐼';
+      addCoins(50);
+      UIEffects.showToast('Connecté avec Google ! +50 🪙 de bienvenue', 'success');
+    } else if (provider === 'apple') {
+      user.name = user.name.startsWith('Invité') ? 'Alex Apple' : user.name;
+      user.avatar = '🍎';
+      addCoins(50);
+      UIEffects.showToast('Connecté avec Apple ! +50 🪙 de bienvenue', 'success');
+    } else if (provider === 'facebook') {
+      user.name = user.name.startsWith('Invité') ? 'Alex FB' : user.name;
+      user.avatar = '👤';
+      addCoins(50);
+      UIEffects.showToast('Connecté avec Facebook ! +50 🪙 de bienvenue', 'success');
+    } else {
+      user.provider = 'guest';
+      UIEffects.showToast('Session Invité active', 'info');
+    }
+
+    saveUserProfile();
+    closeModal('modal-auth');
+  }
+
+  function logout() {
+    user.provider = 'guest';
+    user.name = 'Invité ' + Math.floor(100 + Math.random() * 900);
+    user.avatar = '🦊';
+    saveUserProfile();
+    closeModal('modal-settings');
+    UIEffects.showToast('Déconnexion réussie. Mode invité réactivé.', 'info');
+  }
+
+  // ═══════════════════════════════════════
+  // MODAL CONTROLLERS
+  // ═══════════════════════════════════════
+  function openModal(id) {
+    const m = $(`#${id}`);
+    if (m) m.classList.remove('hidden');
+  }
+
+  function closeModal(id) {
+    const m = $(`#${id}`);
+    if (m) m.classList.add('hidden');
+  }
 
   // ═══════════════════════════════════════
   // WEBSOCKET SETUP
@@ -100,7 +238,7 @@
     if (handler) {
       handler(data);
     } else {
-      console.warn('[App] Type de message inconnu:', data.type);
+      console.warn('[App] Message inconnu:', data.type);
     }
   }
 
@@ -109,7 +247,7 @@
   // ═══════════════════════════════════════
   function onConnected(data) {
     state.socketId = data.socketId;
-    console.log('[App] Connecté avec ID:', state.socketId);
+    console.log('[App] Connecté socketId:', state.socketId);
   }
 
   function onOnlineCount(data) {
@@ -153,6 +291,7 @@
   function onPlayerJoined(data) {
     state.room = data.room;
     renderLobby();
+    AudioPlayer.playSfx('correct');
     UIEffects.showToast(`${data.playerName} a rejoint la partie ! 👋`, 'info');
   }
 
@@ -179,28 +318,51 @@
   }
 
   function onLoadingTracks() {
-    showLoading('Chargement des musiques… 🎵');
+    showLoading('Chargement des extraits musicaux… 🎵');
   }
 
   function onGameStarting(data) {
     hideLoading();
     showView('view-game');
+    AudioPlayer.playSfx('countdown');
     UIEffects.countdown(data.countdown || 3, () => {
-      console.log('[App] Démarrage du 1er round !');
+      console.log('[App] Lancement de la manche 1 !');
     });
   }
 
   function onRoundStart(data) {
     state.hasAnswered = false;
+    state.currentRoundData = data;
+    state.hintStage = 0;
 
-    // Masquer les overlays de round
+    // Reset hints & visual urgency
+    const hintBanner = $('#g-hint-banner');
+    if (hintBanner) {
+      hintBanner.classList.add('hidden');
+    }
+
+    const timerFill = $('#g-timer-fill');
+    const timerText = $('#g-timer-text');
+    if (timerFill) timerFill.classList.remove('urgent');
+    if (timerText) timerText.classList.remove('urgent');
+
+    // Vinyl mystery center vs cover
+    const vinylCenter = $('#g-vinyl-center');
+    const vinylCover = $('#g-cover');
+    if (vinylCenter) vinylCenter.style.display = 'flex';
+    if (vinylCover) {
+      vinylCover.style.display = 'none';
+      vinylCover.src = '';
+    }
+
+    // Masquer les overlays
     $('#g-feedback')?.classList.add('hidden');
     $('#g-round-end')?.classList.add('hidden');
 
     // Round info
     const roundEl = $('#g-round');
     const totalEl = $('#g-total');
-    if (roundEl) roundEl.textContent = data.round;
+    if (roundEl) roundEl.textContent = data.roundNumber || data.round;
     if (totalEl) totalEl.textContent = data.totalRounds;
 
     // Reset input
@@ -219,23 +381,17 @@
     const preview = $('#g-speech-preview');
     if (preview) preview.textContent = '';
 
-    // Cover masquée pendant le round
-    AudioPlayer.setCover('');
-
-    // Play preview
+    // Play preview audio
     if (data.previewUrl) {
       AudioPlayer.play(data.previewUrl);
     }
 
-    // Mini scoreboard
     updateMiniScoreboard();
-
-    // Timer
     startRoundTimer(data.duration || 20);
   }
 
   function onAnswerResult(data) {
-    const { success, artistFound, titleFound, points, message, bonusSpeed, streak } = data;
+    const { success, message, points, bonusSpeed, streak } = data;
 
     const fb = $('#g-feedback');
     const fbIcon = $('#g-fb-icon');
@@ -246,6 +402,9 @@
 
     if (success) {
       state.hasAnswered = true;
+      AudioPlayer.playSfx('correct');
+      addCoins(10); // Reward
+
       const input = $('#g-answer');
       if (input) {
         input.disabled = true;
@@ -255,6 +414,7 @@
       if (submitBtn) submitBtn.disabled = true;
 
       SpeechInput.stopListening();
+      AudioPlayer.setDucking(false);
 
       if (fbIcon) fbIcon.textContent = '🔥';
       if (fbMsg) fbMsg.textContent = message || 'Trouvé !';
@@ -267,6 +427,7 @@
       fb.className = 'game-feedback correct';
       UIEffects.scorePopup(`+${points}`, true);
     } else {
+      AudioPlayer.playSfx('wrong');
       if (fbIcon) fbIcon.textContent = '❌';
       if (fbMsg) fbMsg.textContent = message || 'Mauvaise réponse';
       if (fbPts) fbPts.textContent = '';
@@ -285,6 +446,7 @@
 
   function onPlayerAnswered(data) {
     if (data.playerId !== state.socketId) {
+      AudioPlayer.playSfx('tick');
       UIEffects.showToast(`${data.playerName} a trouvé ! ⚡ (+${data.points} pts)`, 'info', 2000);
     }
     if (data.players && state.room) {
@@ -300,8 +462,16 @@
 
     const { track, answers, scores } = data.result;
 
+    // Révéler la cover sur le disque vinyle
+    const vinylCenter = $('#g-vinyl-center');
+    const vinylCover = $('#g-cover');
+    if (vinylCenter) vinylCenter.style.display = 'none';
+
     if (track) {
-      AudioPlayer.setCover(track.cover);
+      if (vinylCover) {
+        vinylCover.src = track.cover || '';
+        vinylCover.style.display = 'block';
+      }
       const cCover = $('#g-correct-cover');
       const cArtist = $('#g-correct-artist');
       const cTitle = $('#g-correct-title');
@@ -326,7 +496,7 @@
       }).join('');
     }
 
-    // Mise à jour de la room
+    // Mise à jour des scores
     if (state.room && scores) {
       scores.forEach(s => {
         const p = state.room.players?.find(pl => pl.id === s.id);
@@ -336,6 +506,7 @@
     }
 
     $('#g-feedback')?.classList.add('hidden');
+    $('#g-hint-banner')?.classList.add('hidden');
     $('#g-round-end')?.classList.remove('hidden');
   }
 
@@ -356,6 +527,12 @@
     if (wName) wName.textContent = winner ? `${winner.name}` : 'Égalité';
     if (wScore) wScore.textContent = winner ? `${winner.score} points` : '';
 
+    // Bonus pour victoire
+    if (winner && winner.name === user.name) {
+      addCoins(100);
+      UIEffects.showToast('🏆 Victoire ! Tu remportes +100 🪙 de bonus !', 'success', 5000);
+    }
+
     // Full rankings
     const rankingsList = $('#go-rankings');
     if (rankingsList && results.rankings) {
@@ -372,13 +549,12 @@
       }).join('');
     }
 
-    // Replay button (host only)
     const replayBtn = $('#go-replay');
     if (replayBtn) {
       replayBtn.style.display = state.isHost ? 'inline-block' : 'none';
     }
 
-    // Confetti
+    // Confettis
     const canvas = $('#confetti-canvas');
     if (canvas) {
       UIEffects.celebrate(canvas);
@@ -406,7 +582,6 @@
     const target = $(`#${viewId}`);
     if (target) target.classList.add('active');
 
-    // Mettre à jour les liens de nav
     $$('.nav-link, .sidebar-link').forEach(link => {
       const navTarget = link.getAttribute('data-nav');
       if (viewId === 'view-home' && navTarget === 'accueil') {
@@ -422,7 +597,7 @@
   }
 
   // ═══════════════════════════════════════
-  // TIMER
+  // ROUND TIMER, DUCKING & PROGRESSIVE HINTS
   // ═══════════════════════════════════════
   function startRoundTimer(duration) {
     stopRoundTimer();
@@ -430,6 +605,8 @@
 
     const fill = $('#g-timer-fill');
     const text = $('#g-timer-text');
+    const hintBanner = $('#g-hint-banner');
+    const hintText = $('#g-hint-text');
 
     if (text) text.textContent = duration;
     if (fill) fill.style.width = '100%';
@@ -445,9 +622,10 @@
       const percent = (remainingMs / totalMs) * 100;
       if (fill) {
         fill.style.width = `${percent}%`;
-        if (percent < 25) {
-          fill.style.background = '#e63946';
-        } else if (percent < 50) {
+        if (remainingSec <= 5) {
+          fill.classList.add('urgent');
+          if (text) text.classList.add('urgent');
+        } else if (percent < 40) {
           fill.style.background = '#ff6b35';
         } else {
           fill.style.background = '#06d6a0';
@@ -456,8 +634,42 @@
 
       if (text) text.textContent = remainingSec;
 
+      // ─── DYNAMIC HINT 1: AT 7 SECONDS REMAINING ───
+      if (remainingSec <= 7 && state.hintStage === 0 && !state.hasAnswered) {
+        state.hintStage = 1;
+        const rd = state.currentRoundData;
+        if (rd && hintBanner && hintText) {
+          const artistInitial = rd.hintArtistInitial || '?';
+          const genre = rd.genre ? rd.genre.toUpperCase() : 'MUSIQUE';
+          hintText.textContent = `💡 Indice : [${genre}] • Artiste commence par "${artistInitial}"`;
+          hintBanner.classList.remove('hidden');
+          AudioPlayer.playSfx('tick');
+        }
+      }
+
+      // ─── VOLUME DUCKING & SFX TICK: AT 5 SECONDS REMAINING ───
+      if (remainingSec <= 5 && !state.hasAnswered) {
+        if (state.duckingEnabled) {
+          AudioPlayer.setDucking(true, 0.35, 300);
+        }
+        AudioPlayer.playSfx('tick');
+      }
+
+      // ─── DYNAMIC HINT 2: AT 3 SECONDS REMAINING ───
+      if (remainingSec <= 3 && state.hintStage === 1 && !state.hasAnswered) {
+        state.hintStage = 2;
+        const rd = state.currentRoundData;
+        if (rd && hintBanner && hintText) {
+          const titleMask = rd.hintTitleMask || '';
+          hintText.textContent = `⚡ Dernières secondes ! Titre : ${titleMask}`;
+          hintBanner.classList.remove('hidden');
+          AudioPlayer.playSfx('tick');
+        }
+      }
+
       if (remainingMs <= 0) {
         stopRoundTimer();
+        AudioPlayer.setDucking(false);
       }
     }, 100);
   }
@@ -467,6 +679,7 @@
       clearInterval(state.timerInterval);
       state.timerInterval = null;
     }
+    AudioPlayer.setDucking(false);
   }
 
   // ═══════════════════════════════════════
@@ -475,21 +688,15 @@
   function renderLobby() {
     if (!state.room) return;
 
-    // Room Code
     const codeEl = $('#lobby-room-code');
     if (codeEl) codeEl.textContent = state.room.roomId;
 
-    // QR Code
     generateQrCode(state.room.roomId);
 
-    // Settings
     const settingsCard = $('#lobby-settings');
     if (settingsCard) {
-      // Les inputs ne sont modifiables que par l'hôte
       const inputs = settingsCard.querySelectorAll('select');
-      inputs.forEach(sel => {
-        sel.disabled = !state.isHost;
-      });
+      inputs.forEach(sel => sel.disabled = !state.isHost);
 
       const diff = $('#setting-difficulty');
       const genre = $('#setting-genre');
@@ -519,7 +726,6 @@
       `).join('');
     }
 
-    // Host controls vs guest waiting
     const startBtn = $('#btn-start-game');
     const waitingMsg = $('#waiting-host');
     if (state.isHost) {
@@ -591,14 +797,12 @@
       </div>
     `).join('');
 
-    // Click handler for playlist play buttons
     $$('.btn-play-playlist').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const key = btn.getAttribute('data-key');
         const name = getPlayerName();
         if (!name) return;
-        state.playerName = name;
         AudioPlayer.ensureAudioContext();
         send('CREATE_ROOM', { playerName: name, genre: key });
       });
@@ -638,7 +842,6 @@
         const roomId = btn.getAttribute('data-room');
         const name = getPlayerName();
         if (!name) return;
-        state.playerName = name;
         AudioPlayer.ensureAudioContext();
         send('JOIN_ROOM', { playerName: name, roomId });
       });
@@ -688,18 +891,15 @@
   }
 
   function getAvatarEmoji(name) {
-    const avatars = ['🦊', '🐼', '🐯', '🦁', '🐵', '🐸', '🐙', '🦄', '🐨', '🐺', '🦉', '🐱'];
+    if (name === user.name) return user.avatar;
     let hash = 0;
     for (let i = 0; i < (name || '').length; i++) hash += name.charCodeAt(i);
-    return avatars[hash % avatars.length];
+    return AVATARS[hash % AVATARS.length];
   }
 
   function getPlayerName() {
     const input = $('#player-name');
-    let name = (input?.value || '').trim();
-    if (!name) {
-      name = state.playerName || '';
-    }
+    let name = (input?.value || '').trim() || user.name;
     if (!name) {
       name = prompt('Choisis ton pseudo pour jouer :');
       if (name) name = name.trim();
@@ -710,21 +910,110 @@
       input?.focus();
       return null;
     }
-    state.playerName = name;
-    localStorage.setItem('muzik_player_name', name);
+    user.name = name;
+    saveUserProfile();
     if (input) input.value = name;
     return name;
+  }
+
+  // ═══════════════════════════════════════
+  // VOLUME WIDGET CONTROLLER
+  // ═══════════════════════════════════════
+  function setupVolumeControls() {
+    const btnVol = $('#btn-volume-control');
+    const popup = $('#volume-popup');
+    const slider = $('#volume-slider');
+    const percent = $('#volume-percent');
+    const icon = $('#volume-icon');
+
+    // Sync initial
+    const initialVol = Math.round(AudioPlayer.getVolume() * 100);
+    if (slider) slider.value = initialVol;
+    if (percent) percent.textContent = `${initialVol}%`;
+    updateVolumeIcon(initialVol, AudioPlayer.getIsMuted());
+
+    btnVol?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popup?.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (popup && !popup.contains(e.target) && e.target !== btnVol && !btnVol?.contains(e.target)) {
+        popup.classList.add('hidden');
+      }
+    });
+
+    slider?.addEventListener('input', () => {
+      const val = parseInt(slider.value, 10);
+      AudioPlayer.setVolume(val / 100);
+      if (percent) percent.textContent = `${val}%`;
+      updateVolumeIcon(val, false);
+      // Sync settings modal slider too
+      const setMusic = $('#set-music-vol');
+      const setVal = $('#set-music-vol-val');
+      if (setMusic) setMusic.value = val;
+      if (setVal) setVal.textContent = `${val}%`;
+    });
+
+    function updateVolumeIcon(val, muted) {
+      if (!icon) return;
+      if (muted || val === 0) icon.textContent = '🔇';
+      else if (val < 30) icon.textContent = '🔈';
+      else if (val < 70) icon.textContent = '🔉';
+      else icon.textContent = '🔊';
+    }
+
+    // Settings modal sliders
+    const setMusic = $('#set-music-vol');
+    const setMusicVal = $('#set-music-vol-val');
+    if (setMusic) {
+      setMusic.value = initialVol;
+      if (setMusicVal) setMusicVal.textContent = `${initialVol}%`;
+      setMusic.addEventListener('input', () => {
+        const val = parseInt(setMusic.value, 10);
+        AudioPlayer.setVolume(val / 100);
+        if (setMusicVal) setMusicVal.textContent = `${val}%`;
+        if (slider) slider.value = val;
+        if (percent) percent.textContent = `${val}%`;
+        updateVolumeIcon(val, false);
+      });
+    }
+
+    const setSfx = $('#set-sfx-vol');
+    const setSfxVal = $('#set-sfx-vol-val');
+    if (setSfx) {
+      const initialSfx = Math.round(AudioPlayer.getSfxVolume() * 100);
+      setSfx.value = initialSfx;
+      if (setSfxVal) setSfxVal.textContent = `${initialSfx}%`;
+      setSfx.addEventListener('input', () => {
+        const val = parseInt(setSfx.value, 10);
+        AudioPlayer.setSfxVolume(val / 100);
+        if (setSfxVal) setSfxVal.textContent = `${val}%`;
+      });
+    }
+
+    // Ducking toggle in settings
+    const duckingToggle = $('#set-ducking-toggle');
+    if (duckingToggle) {
+      duckingToggle.checked = state.duckingEnabled;
+      duckingToggle.addEventListener('change', () => {
+        state.duckingEnabled = duckingToggle.checked;
+        localStorage.setItem('muzik_ducking_enabled', String(state.duckingEnabled));
+        UIEffects.showToast(
+          state.duckingEnabled ? 'Volume ducking activé 🔉' : 'Volume ducking désactivé 🔊',
+          'info',
+          1500
+        );
+      });
+    }
   }
 
   // ═══════════════════════════════════════
   // EVENT BINDINGS
   // ═══════════════════════════════════════
   function bindEvents() {
-    // Restaurer le pseudo sauvegardé
-    if (state.playerName) {
-      const pInput = $('#player-name');
-      if (pInput) pInput.value = state.playerName;
-    }
+    updateProfileUI();
+    setupVolumeControls();
 
     // Nav Header & Sidebar
     $$('[data-nav]').forEach(item => {
@@ -740,6 +1029,40 @@
       e.preventDefault();
       showView('view-home');
     });
+
+    // Profile pill & Settings triggers
+    $('#btn-profile-pill')?.addEventListener('click', () => {
+      openModal('modal-auth');
+    });
+
+    $('#header-coins-badge')?.addEventListener('click', () => {
+      openModal('modal-auth');
+    });
+
+    $('#btn-open-settings')?.addEventListener('click', () => {
+      openModal('modal-settings');
+    });
+
+    // Auth Modal Actions
+    $('#btn-close-auth')?.addEventListener('click', () => closeModal('modal-auth'));
+    $('#btn-close-settings')?.addEventListener('click', () => closeModal('modal-settings'));
+
+    $('#btn-auth-google')?.addEventListener('click', () => login('google'));
+    $('#btn-auth-apple')?.addEventListener('click', () => login('apple'));
+    $('#btn-auth-facebook')?.addEventListener('click', () => login('facebook'));
+    $('#btn-auth-guest')?.addEventListener('click', () => login('guest'));
+
+    // Settings Profile Actions
+    $('#settings-name-input')?.addEventListener('change', (e) => {
+      const val = e.target.value.trim();
+      if (val) {
+        user.name = val;
+        saveUserProfile();
+        UIEffects.showToast('Pseudo mis à jour !', 'success', 1500);
+      }
+    });
+
+    $('#btn-logout')?.addEventListener('click', logout);
 
     // Bouton Créer une partie
     $('#btn-create')?.addEventListener('click', () => {
@@ -764,7 +1087,7 @@
 
     // Scanner QR code
     $('#btn-scan-qr')?.addEventListener('click', () => {
-      const codeOrUrl = prompt('Entre le code de la partie ou colle le lien d\'invitation :');
+      const codeOrUrl = prompt('Entre le code du salon ou colle le lien d\'invitation :');
       if (!codeOrUrl) return;
       let code = codeOrUrl.trim();
       if (code.includes('room=')) {
@@ -880,18 +1203,20 @@
       if (e.key === 'Enter') submitAnswer();
     });
 
-    // GAME — Microphone vocal
+    // GAME — Microphone vocal avec Volume Ducking automatique
     const micBtn = $('#g-mic');
     micBtn?.addEventListener('click', () => {
       AudioPlayer.ensureAudioContext();
       if (SpeechInput.isListening) {
         SpeechInput.stopListening();
         micBtn.classList.remove('active');
+        if (state.duckingEnabled) AudioPlayer.setDucking(false, 1.0, 300);
         const status = $('#g-speech-status');
         if (status) status.textContent = 'Microphone arrêté';
       } else {
         SpeechInput.startListening();
         micBtn.classList.add('active');
+        if (state.duckingEnabled) AudioPlayer.setDucking(true, 0.25, 200);
         const status = $('#g-speech-status');
         if (status) status.textContent = 'Écoute en cours… Parle maintenant ! 🎙️';
       }
@@ -908,6 +1233,7 @@
         if (preview) preview.textContent = `« ${text} »`;
         const mic = $('#g-mic');
         if (mic) mic.classList.remove('active');
+        if (state.duckingEnabled) AudioPlayer.setDucking(false, 1.0, 300);
         const status = $('#g-speech-status');
         if (status) status.textContent = 'Réponse enregistrée';
         send('SUBMIT_ANSWER', { answer: text });
@@ -915,6 +1241,7 @@
       onEnd: () => {
         const mic = $('#g-mic');
         if (mic) mic.classList.remove('active');
+        if (state.duckingEnabled) AudioPlayer.setDucking(false, 1.0, 300);
       },
     });
 
@@ -966,7 +1293,7 @@
     UIEffects.init();
     connectWebSocket();
     bindEvents();
-    console.log('[App] Initialisé avec succès !');
+    console.log('[App] Initialisé avec Mukiz Auth, Ducking & Conseils !');
   }
 
   if (document.readyState === 'loading') {

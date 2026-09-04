@@ -126,12 +126,27 @@ class Room {
       player.lastAnswer = null;
     }
 
+    // Generate hints for progressive reveal
+    const artist = this.currentTrack.artist || '';
+    const title = this.currentTrack.title || '';
+    const artistInitial = artist ? artist.charAt(0).toUpperCase() : '?';
+    const titleWords = title.split(' ').filter(Boolean);
+    const titleMask = titleWords.map(w => {
+      if (w.length <= 1) return w.toUpperCase();
+      return w.charAt(0).toUpperCase() + ' ' + '• '.repeat(w.length - 1).trim();
+    }).join('   ');
+
     return {
       roundNumber: this.currentRound,
+      round: this.currentRound,
       totalRounds: this.totalRounds,
       previewUrl: this.currentTrack.preview,
       cover: this.currentTrack.cover,
       duration: this.roundDuration,
+      genre: this.genre,
+      hintArtistInitial: artistInitial,
+      hintTitleMask: titleMask,
+      hintWordCount: titleWords.length,
     };
   }
 
