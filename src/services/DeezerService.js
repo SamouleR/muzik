@@ -457,6 +457,186 @@ const PLAYLISTS = {
       'https://cdn-images.dzcdn.net/images/cover/43bd78a4753df33da9efc2207c4286ee/250x250-000000-80-0-0.jpg'
     ]
   },
+  '100-jul': {
+    name: '100% Jul',
+    emoji: '👽',
+    color: '#F59E0B',
+    category: 'artists',
+    trackCount: 100,
+    difficulty: 'FACILE',
+    description: 'Le J, c\'est le S ! Tous les plus grands bangers et ovnis de Jul',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/c1775a285d820beea1eb5e024ff0bca5/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/f0beee92a831e679a957d591e1d0f507/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/bc5cd6526b7b34cfc0eb5a6ed46b5524/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/914db9146f330d0a2969d157872da5eb/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-ninho': {
+    name: '100% Ninho',
+    emoji: '👑',
+    color: '#3B82F6',
+    category: 'artists',
+    trackCount: 80,
+    difficulty: 'FACILE',
+    description: 'Destin, M.I.L.S, Jefe, NI : les pépites certifiées diamant du boss',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/93246ebcf2ee2f94b159f81dfce04358/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/184c410ed1a734d985ae85211f7ab313/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/eb4290d46e35397743bb64d5a5efcfbd/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/d7a71bb95b5463428fb1d76ea656911c/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-booba': {
+    name: '100% Booba',
+    emoji: '🏴‍☠️',
+    color: '#111827',
+    category: 'artists',
+    trackCount: 75,
+    difficulty: 'MOYEN',
+    description: 'Le Duc de Boulogne : de Lunatic, Temps Mort à ULTRA',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/063f2538cb312d9196b01e3895e7c1f8/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/9871e4e6d30f40eebe8502db74ad64a8/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/8fa5be51fc239c07ec7ae44c2079fe03/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/7eb56ae534d0b16f34e9e5e7fa92eb9a/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-gazo': {
+    name: '100% Gazo',
+    emoji: '🥷',
+    color: '#EF4444',
+    category: 'artists',
+    trackCount: 60,
+    difficulty: 'FACILE',
+    description: 'Drill FR, KMT, bangers et feats d\'anthologie (Die, Molly, Filtré...)',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/07a6df111516e090b8fceba13e843f7a/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/1c8f1f7d2ee218285514f762699f7d33/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/eb4290d46e35397743bb64d5a5efcfbd/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/43bd78a4753df33da9efc2207c4286ee/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-aya': {
+    name: '100% Aya Nakamura',
+    emoji: '💃',
+    color: '#EC4899',
+    category: 'artists',
+    trackCount: 50,
+    difficulty: 'FACILE',
+    description: 'Djadja, Pookie, Dégaine, Copines : la reine de la pop urbaine',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/cf50f58ecbe0df77e928a2a890453535/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/0bdf60cb5392d4787d15764d84f85e49/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/73b741e3e925f5bb9b27ae2b3c2c78a7/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-damso': {
+    name: '100% Damso',
+    emoji: '🐺',
+    color: '#6B7280',
+    category: 'artists',
+    trackCount: 60,
+    difficulty: 'MOYEN',
+    description: 'Batterie Faible, Ipséité, Lithopédion, QALF : la discographie du Dems',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/4397cfb5610b759ea47970fcbbdd9ea8/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/8fa5be51fc239c07ec7ae44c2079fe03/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/eb4290d46e35397743bb64d5a5efcfbd/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/184c410ed1a734d985ae85211f7ab313/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-drake': {
+    name: '100% Drake',
+    emoji: '🦉',
+    color: '#FBBF24',
+    category: 'artists',
+    trackCount: 90,
+    difficulty: 'FACILE',
+    description: 'Certified Lover Boy, Hotline Bling, God\'s Plan & OVO hits',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/5b47a164d1f2b604bc8d7454f5ff74ae/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/425fb8433363401fa55e88ecb5ee720f/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/43bd78a4753df33da9efc2207c4286ee/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-the-weeknd': {
+    name: '100% The Weeknd',
+    emoji: '🌙',
+    color: '#8B5CF6',
+    category: 'artists',
+    trackCount: 70,
+    difficulty: 'FACILE',
+    description: 'Blinding Lights, Starboy, After Hours, Can\'t Feel My Face',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/c176722d3dd548074d28479e0a6d0935/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/2f2fa9d5b41faeb8cbfb45a278ec6222/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/73b741e3e925f5bb9b27ae2b3c2c78a7/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/1c8f1f7d2ee218285514f762699f7d33/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-celine': {
+    name: '100% Céline Dion',
+    emoji: '🎤',
+    color: '#06B6D4',
+    category: 'artists',
+    trackCount: 70,
+    difficulty: 'FACILE',
+    description: 'Pour que tu m\'aimes encore, My Heart Will Go On, S\'il suffisait d\'aimer',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/ae806efdf93a61d152a5c53fc42199b5/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/184c410ed1a734d985ae85211f7ab313/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/914db9146f330d0a2969d157872da5eb/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/bc5cd6526b7b34cfc0eb5a6ed46b5524/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-daft-punk': {
+    name: '100% Daft Punk',
+    emoji: '🤖',
+    color: '#EAB308',
+    category: 'artists',
+    trackCount: 50,
+    difficulty: 'FACILE',
+    description: 'One More Time, Around the World, Harder Better Faster, Get Lucky',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/f2bc007e9133c9484f3214edd73bc959/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/6c65b16954203649069d3568c85ae763/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/850117d6ff5ee1d92bf98305ce6364bf/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/7eb56ae534d0b16f34e9e5e7fa92eb9a/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-michael-jackson': {
+    name: '100% Michael Jackson',
+    emoji: '🧤',
+    color: '#DC2626',
+    category: 'artists',
+    trackCount: 60,
+    difficulty: 'FACILE',
+    description: 'King of Pop : Thriller, Billie Jean, Beat It, Bad, Smooth Criminal',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/fe933cf8528aa71c12e8055627582236/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/03db026c48d42d3ad743f07a7e324ef5/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/43bd78a4753df33da9efc2207c4286ee/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-eminem': {
+    name: '100% Eminem',
+    emoji: '🎙️',
+    color: '#4B5563',
+    category: 'artists',
+    trackCount: 70,
+    difficulty: 'MOYEN',
+    description: 'Slim Shady : Lose Yourself, Without Me, Rap God, The Real Slim Shady',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/1947b7fbe13ba4cf3a9ab8e4e94b8e61/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/406606a6ea46e13883a48e7e1ef563e4/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/425fb8433363401fa55e88ecb5ee720f/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/73b741e3e925f5bb9b27ae2b3c2c78a7/250x250-000000-80-0-0.jpg'
+    ]
+  },
 };
 
 // Stockage dynamique des playlists personnalisées importées (Spotify / Deezer)
@@ -488,6 +668,18 @@ const PLAYLIST_QUERIES = {
   'tiktok': ['Doja Cat', 'Dua Lipa', 'Lil Nas X', 'Olivia Rodrigo', 'The Kid Laroi', 'Cardi B', 'Megan Thee Stallion'],
   'jeux-video': ['Undertale Megalovania', 'Zelda Theme', 'Mario Bros', 'Tetris', 'Final Fantasy', 'Pokemon'],
   'mix': ['Ninho', 'Dua Lipa', 'The Weeknd', 'Jul', 'Imagine Dragons', 'Bad Bunny', 'Daft Punk', 'Aya Nakamura', 'Drake', 'Taylor Swift'],
+  '100-jul': ['Jul Tchikita', 'Jul JCVD', 'Jul Bande Organisee', 'Jul La Selecao', 'Jul On m appelle l ovni', 'Jul Ma jolie'],
+  '100-ninho': ['Ninho Jefe', 'Ninho Lettre a une femme', 'Ninho La vie qu on mene', 'Ninho Tout va bien', 'Ninho Destin', 'Ninho Goutte d eau'],
+  '100-booba': ['Booba DKR', 'Booba Petite Fille', 'Booba 92i Veyron', 'Booba Mona Lisa', 'Booba Boulbi', 'Booba Garde la peche'],
+  '100-gazo': ['Gazo Die', 'Gazo Molly', 'Gazo Filtre', 'Gazo Drill FR 4', 'Gazo Rappel', 'Gazo Celine'],
+  '100-aya': ['Aya Nakamura Djadja', 'Aya Nakamura Pookie', 'Aya Nakamura Jolie Nana', 'Aya Nakamura Degaine', 'Aya Nakamura Copines'],
+  '100-damso': ['Damso Macarena', 'Damso Mwaka Moon', 'Damso Smog', 'Damso Amnesie', 'Damso Feu de bois', 'Damso Morose'],
+  '100-drake': ['Drake Gods Plan', 'Drake Hotline Bling', 'Drake In My Feelings', 'Drake One Dance', 'Drake Passionfruit'],
+  '100-the-weeknd': ['The Weeknd Blinding Lights', 'The Weeknd Starboy', 'The Weeknd Save Your Tears', 'The Weeknd Cant Feel My Face'],
+  '100-celine': ['Celine Dion Pour que tu m aimes encore', 'Celine Dion My Heart Will Go On', 'Celine Dion J irai ou tu iras', 'Celine Dion S il suffisait d aimer'],
+  '100-daft-punk': ['Daft Punk One More Time', 'Daft Punk Get Lucky', 'Daft Punk Around the World', 'Daft Punk Harder Better Faster'],
+  '100-michael-jackson': ['Michael Jackson Thriller', 'Michael Jackson Billie Jean', 'Michael Jackson Beat It', 'Michael Jackson Smooth Criminal', 'Michael Jackson Bad'],
+  '100-eminem': ['Eminem Lose Yourself', 'Eminem Without Me', 'Eminem The Real Slim Shady', 'Eminem Rap God', 'Eminem Stan'],
 };
 
 // Cache
@@ -731,6 +923,37 @@ function clearCache() {
   trackCache.clear();
 }
 
+/**
+ * Crée et enregistre une playlist personnalisée avec une liste de morceaux choisis
+ */
+function createCustomPlaylist({ name, description, emoji, tracks }) {
+  if (!name || !tracks || tracks.length === 0) {
+    throw new Error('Nom ou morceaux manquants pour la playlist');
+  }
+
+  const customId = `custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const covers = tracks.slice(0, 3).map(t => t.cover).filter(Boolean);
+  const mainCover = covers[0] || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80';
+
+  const customPlaylist = {
+    key: customId,
+    name: name.trim(),
+    emoji: emoji || '🎙️',
+    color: '#10B981',
+    category: 'custom',
+    trackCount: tracks.length,
+    difficulty: 'MOYEN',
+    description: description ? description.trim() : `Playlist personnalisée de ${tracks.length} morceaux`,
+    cover: mainCover,
+    previewCovers: covers.length > 0 ? covers : [mainCover],
+    isCustom: true,
+    tracks: tracks,
+  };
+
+  CUSTOM_PLAYLISTS.set(customId, customPlaylist);
+  return customPlaylist;
+}
+
 module.exports = {
   searchTracks,
   getRandomTracks,
@@ -739,6 +962,7 @@ module.exports = {
   getAvailablePlaylists,
   getAvailableGenres,
   importPlaylistFromUrl,
+  createCustomPlaylist,
   setSpotifyToken,
   refreshSpotifyToken,
   clearCache,

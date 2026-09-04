@@ -164,7 +164,7 @@ class Room {
 
     const elapsed = (Date.now() - this.roundStartTime) / 1000;
 
-    // Arbitrage
+    // Arbitrage avec détection de featuring
     const result = Arbiter.evaluate({
       expected_artist: this.currentTrack.artist,
       expected_title: this.currentTrack.title,
@@ -172,17 +172,36 @@ class Room {
       difficulty: this.difficulty,
     });
 
-    // Calcul des points : plus rapide = plus de points
+    // Calcul des points : plus rapide = plus de points + Win Streak + Bonus Feat
     let points = 0;
+    let streakBonus = 0;
+    let streakLabel = null;
+
     if (result.is_correct) {
-      // Base : 1000 points, décroissant avec le temps
+      // Base : 500 à 1000 points selon rapidité
       const timeRatio = Math.max(0, 1 - (elapsed / this.roundDuration));
       points = Math.round(500 + 500 * timeRatio);
 
-      // Bonus streak
+      // Win Streak d'affilée (bonus consécutif)
       player.streak++;
-      if (player.streak >= 3) {
-        points += 100 * Math.min(player.streak - 2, 5);
+      if (player.streak === 2) {
+        streakBonus = 100;
+        streakLabel = '🔥 x2';
+      } else if (player.streak === 3) {
+        streakBonus = 200;
+        streakLabel = '🔥 x3';
+      } else if (player.streak === 4) {
+        streakBonus = 300;
+        streakLabel = '🔥 x4';
+      } else if (player.streak >= 5) {
+        streakBonus = 500;
+        streakLabel = `🔥 x${player.streak} ON FIRE!`;
+      }
+      points += streakBonus;
+
+      // Bonus Feat si l'artiste invité a été cité
+      if (result.feat_detected) {
+        points += (result.feat_bonus || 150);
       }
 
       player.score += points;
@@ -194,12 +213,17 @@ class Room {
       answer,
       ...result,
       points,
+      streak: player.streak,
+      streakBonus,
+      streakLabel,
       time: Math.round(elapsed * 10) / 10,
     };
 
     return {
       ...result,
       points,
+      streakBonus,
+      streakLabel,
       time: player.lastAnswer.time,
       totalScore: player.score,
       streak: player.streak,
@@ -218,12 +242,19 @@ class Room {
       this.roundTimer = null;
     }
 
+    const featInfo = Arbiter.extractFeaturing(this.currentTrack.title, this.currentTrack.artist);
+
     const roundResult = {
       roundNumber: this.currentRound,
       correctAnswer: {
         artist: this.currentTrack.artist,
+        cleanArtist: featInfo.cleanArtist,
         title: this.currentTrack.title,
+        cleanTitle: featInfo.cleanTitle,
+        featArtist: featInfo.featArtist,
         cover: this.currentTrack.cover,
+        coverBig: this.currentTrack.coverBig || this.currentTrack.cover,
+        album: this.currentTrack.album,
       },
       playerResults: [],
     };
@@ -234,6 +265,11 @@ class Room {
         answer: player.lastAnswer?.answer || '(pas de réponse)',
         isCorrect: player.lastAnswer?.is_correct || false,
         points: player.lastAnswer?.points || 0,
+        streak: player.streak,
+        streakBonus: player.lastAnswer?.streakBonus || 0,
+        streakLabel: player.lastAnswer?.streakLabel || null,
+        featDetected: player.lastAnswer?.feat_detected || false,
+        featBonus: player.lastAnswer?.feat_bonus || 0,
         totalScore: player.score,
         time: player.lastAnswer?.time || null,
       });

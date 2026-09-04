@@ -43,6 +43,36 @@ app.post('/api/playlists/import', async (req, res) => {
   }
 });
 
+// Search tracks API (for Custom Playlist Creator)
+app.get('/api/tracks/search', async (req, res) => {
+  try {
+    const q = req.query.q;
+    if (!q || !q.trim()) {
+      return res.json({ tracks: [] });
+    }
+    const tracks = await DeezerService.searchTracks(q.trim(), 15);
+    res.json({ success: true, tracks });
+  } catch (err) {
+    console.error('[Track search error]:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Create custom playlist API
+app.post('/api/playlists/custom', (req, res) => {
+  try {
+    const { name, description, emoji, tracks } = req.body || {};
+    if (!name || !tracks || tracks.length === 0) {
+      return res.status(400).json({ success: false, message: 'Nom ou morceaux manquants' });
+    }
+    const playlist = DeezerService.createCustomPlaylist({ name, description, emoji, tracks });
+    res.json({ success: true, playlist });
+  } catch (err) {
+    console.error('[Create custom playlist error]:', err.message);
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
 // WebSocket Server
 const wss = new WebSocketServer({ server });
 const gameManager = new GameManager();

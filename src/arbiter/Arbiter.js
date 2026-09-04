@@ -116,6 +116,37 @@ function hasKeywordMatch(answer, title) {
 }
 
 /**
+ * Extrait les artistes en featuring depuis le titre ou la chaîne d'artiste
+ */
+function extractFeaturing(title, artist) {
+  let featArtist = null;
+  let cleanTitle = title || '';
+  let cleanArtist = artist || '';
+
+  // 1. Chercher dans le titre : "(feat. XYZ)" ou "(ft. XYZ)" ou "feat. XYZ"
+  const titleFeatMatch = title ? title.match(/(?:\(|\[|\b)(?:feat\.?|ft\.?|featuring)\s+([^()[\]]+)(?:\)|\]|\b)?/i) : null;
+  if (titleFeatMatch && titleFeatMatch[1]) {
+    featArtist = titleFeatMatch[1].trim();
+    cleanTitle = cleanTitle.replace(titleFeatMatch[0], '').trim();
+  }
+
+  // 2. Chercher dans l'artiste : "Artist feat. XYZ" ou "Artist ft. XYZ"
+  if (!featArtist && artist) {
+    const artistFeatMatch = artist.match(/(?:feat\.?|ft\.?|featuring)\s+(.+)/i);
+    if (artistFeatMatch && artistFeatMatch[1]) {
+      featArtist = artistFeatMatch[1].trim();
+      cleanArtist = cleanArtist.replace(artistFeatMatch[0], '').trim();
+    }
+  }
+
+  return {
+    cleanTitle,
+    cleanArtist,
+    featArtist,
+  };
+}
+
+/**
  * Choisit un message de feedback aléatoire en fonction du résultat
  */
 function pickFeedback(isCorrect, score, expectedArtist, expectedTitle) {
@@ -140,25 +171,42 @@ function pickFeedback(isCorrect, score, expectedArtist, expectedTitle) {
  * @param {string} data.expected_title  - Le titre réel
  * @param {string} data.player_answer   - La réponse du joueur
  * @param {string} data.difficulty      - DEBUTANT | INTERMEDIAIRE | EXPERT
- * @returns {Object} { is_correct, accuracy_score, feedback_message }
+ * @param {string} [data.expected_feat] - Artiste(s) en featuring optionnel
+ * @returns {Object} { is_correct, accuracy_score, feedback_message, has_feat, feat_detected, feat_artist, feat_bonus }
  */
 function evaluate(data) {
-  const { expected_artist, expected_title, player_answer, difficulty } = data;
+  const { expected_artist, expected_title, player_answer, difficulty, expected_feat } = data;
 
   if (!player_answer || !player_answer.trim()) {
     return {
       is_correct: false,
       accuracy_score: 0,
-      feedback_message: "T'as rien dit ! Le micro marche ? 🎤"
+      feedback_message: "T'as rien dit ! Le micro marche ? 🎤",
+      has_feat: false,
+      feat_detected: false,
+      feat_artist: null,
+      feat_bonus: 0,
     };
   }
 
+  // Détecter si un feat est présent dans le titre ou l'artiste
+  const featInfo = extractFeaturing(expected_title, expected_artist);
+  const targetFeat = expected_feat || featInfo.featArtist;
+  const targetArtist = featInfo.cleanArtist || expected_artist;
+  const targetTitle = featInfo.cleanTitle || expected_title;
+
   // Calculer les scores pour l'artiste et le titre séparément
-  const artistScore = computeMatchScore(player_answer, expected_artist);
-  const titleScore = computeMatchScore(player_answer, expected_title);
+  const artistScore = Math.max(
+    computeMatchScore(player_answer, expected_artist),
+    computeMatchScore(player_answer, targetArtist)
+  );
+  const titleScore = Math.max(
+    computeMatchScore(player_answer, expected_title),
+    computeMatchScore(player_answer, targetTitle)
+  );
 
   // Score combiné : on essaie de matcher la réponse complète contre "artiste titre"
-  const combinedExpected = `${expected_artist} ${expected_title}`;
+  const combinedExpected = `${targetArtist} ${targetTitle}`;
   const combinedScore = computeMatchScore(player_answer, combinedExpected);
 
   // Score global = meilleure combinaison possible
@@ -179,7 +227,7 @@ function evaluate(data) {
       // Artiste correct + au moins un mot-clé du titre
       isCorrect = artistScore >= 72 && (
         titleScore >= 60 ||
-        hasKeywordMatch(player_answer, expected_title)
+        hasKeywordMatch(player_answer, targetTitle)
       );
       break;
 
@@ -193,14 +241,35 @@ function evaluate(data) {
       isCorrect = artistScore >= 70 || titleScore >= 70;
   }
 
+  // Vérifier si le joueur a également cité le feat !
+  let featDetected = false;
+  let featBonus = 0;
+  if (isCorrect && targetFeat) {
+    const featScore = computeMatchScore(player_answer, targetFeat);
+    const featParts = targetFeat.split(/[,&]/).map(p => p.trim()).filter(Boolean);
+    const anyPartMatches = featParts.some(p => computeMatchScore(player_answer, p) >= 68);
+
+    if (featScore >= 68 || anyPartMatches) {
+      featDetected = true;
+      featBonus = 150;
+    }
+  }
+
   const accuracyScore = Math.min(100, Math.max(0, overallScore));
-  const feedbackMessage = pickFeedback(isCorrect, accuracyScore, expected_artist, expected_title);
+  let feedbackMessage = pickFeedback(isCorrect, accuracyScore, expected_artist, expected_title);
+  if (featDetected) {
+    feedbackMessage = `🎙️ ÉNORME ! T'as cité le feat (${targetFeat}) ! +150 pts bonus ! 🔥`;
+  }
 
   return {
     is_correct: isCorrect,
     accuracy_score: accuracyScore,
-    feedback_message: feedbackMessage
+    feedback_message: feedbackMessage,
+    has_feat: Boolean(targetFeat),
+    feat_detected: featDetected,
+    feat_artist: targetFeat,
+    feat_bonus: featBonus,
   };
 }
 
-module.exports = { evaluate, normalize, computeMatchScore };
+module.exports = { evaluate, normalize, computeMatchScore, extractFeaturing };

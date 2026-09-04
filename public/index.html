@@ -158,13 +158,18 @@
           <div class="custom-pl-icon">🎙️</div>
           <div>
             <h3 class="custom-pl-title">Custom playlists</h3>
-            <p class="custom-pl-subtitle">Crée tes propres playlists à partir de tes titres préférés !</p>
+            <p class="custom-pl-subtitle">Crée tes propres playlists sur-mesure ou importe tes coups de cœur Spotify / Deezer !</p>
           </div>
         </div>
-        <button id="btn-open-spotify-modal" class="btn btn-yellow btn-manage-pl">
-          ⚡ Connecter mon compte Spotify / Gérer mes playlists
-        </button>
-        <div class="divider-or"><span>ou</span></div>
+        <div class="custom-pl-actions-group">
+          <button id="btn-open-create-playlist-modal" class="btn btn-purple btn-manage-pl">
+            ➕ Créer ma propre playlist sur-mesure
+          </button>
+          <button id="btn-open-spotify-modal" class="btn btn-yellow btn-manage-pl">
+            ⚡ Connecter Spotify / Presets
+          </button>
+        </div>
+        <div class="divider-or"><span>ou coller un lien direct</span></div>
         <div class="custom-pl-input-row">
           <input type="text" id="spotify-url-input" placeholder="Coller le lien d'une playlist Spotify ou Deezer..." class="custom-pl-input" autocomplete="off">
           <button id="btn-import-spotify" class="btn btn-open-custom">Ouvrir</button>
@@ -174,9 +179,11 @@
       <div class="section-header"><h3>Browse by type 🔎</h3></div>
       <div class="category-tags">
         <button class="category-tag active" data-cat="all">✨ Toutes</button>
+        <button class="category-tag" data-cat="artists">🔥 100% Artistes</button>
         <button class="category-tag" data-cat="genres">📼 Genres</button>
         <button class="category-tag" data-cat="decades">📅 Décennies</button>
         <button class="category-tag" data-cat="themes">🎬 Thèmes</button>
+        <button class="category-tag" data-cat="custom">🎙️ Mes Playlists & Custom</button>
       </div>
 
       <div class="section-header"><h3>For you 💖 & Toutes les playlists 💿</h3></div>
@@ -378,18 +385,45 @@
         </div>
       </div>
 
-      <!-- Round End overlay -->
+      <!-- Round End overlay (Grande Révélation sans vinyle) -->
       <div id="g-round-end" class="round-end-overlay hidden">
-        <div class="round-end-card card">
-          <h3>Résultat du round</h3>
-          <div class="correct-answer-row">
-            <img id="g-correct-cover" src="" alt="" class="correct-thumb">
-            <div>
-              <p id="g-correct-artist" class="correct-artist-name"></p>
-              <p id="g-correct-title" class="correct-track-name"></p>
+        <div class="round-end-card-mukiz">
+          <div class="round-end-header-bar">
+            <span class="round-end-tag">RÉSULTAT DU ROUND <span id="re-round-num">1</span></span>
+            <span class="round-end-timer-badge">Prochain round dans <b id="re-countdown">5</b>s</span>
+          </div>
+
+          <!-- Showcase Rectangulaire Moderne : Grande Cover à gauche, Infos & Badges à droite -->
+          <div class="re-showcase-card">
+            <div class="re-cover-container">
+              <img id="g-correct-cover" src="" alt="Album Cover" class="re-big-cover">
+              <div class="re-cover-overlay-badge" id="re-audio-indicator">🎵</div>
+            </div>
+
+            <div class="re-details-col">
+              <div class="re-title-block">
+                <span class="re-kicker">TITRE RÉVÉLÉ</span>
+                <h2 id="g-correct-title" class="re-track-title">Titre</h2>
+                <h3 id="g-correct-artist" class="re-artist-name">Artiste</h3>
+                <div id="re-feat-badge" class="re-feat-badge hidden">
+                  <span class="feat-icon">🎙️</span> Feat. <span id="re-feat-name"></span>
+                </div>
+              </div>
+
+              <!-- Badges de performance du joueur : Trouvé, Streak, Feat -->
+              <div class="re-player-status-row" id="re-player-status">
+                <div class="re-status-chip" id="re-chip-result">✅ Trouvé (+750 pts)</div>
+                <div class="re-status-chip chip-streak hidden" id="re-chip-streak">🔥 Série x3 (+200 pts)</div>
+                <div class="re-status-chip chip-feat hidden" id="re-chip-feat">🎙️ Bonus Feat Cité (+150 pts)</div>
+              </div>
             </div>
           </div>
-          <ul id="g-round-results" class="round-results"></ul>
+
+          <!-- Classement des Joueurs pour ce round -->
+          <div class="re-leaderboard-section">
+            <h4 class="re-leaderboard-title">Scores du round 🏆</h4>
+            <ul id="g-round-results" class="re-round-results-list"></ul>
+          </div>
         </div>
       </div>
     </section>
@@ -633,6 +667,66 @@
             <p class="spotify-no-saved">Aucune playlist personnalisée importée pour l'instant.</p>
           </div>
         </div>
+      </div>
+    </div>
+  <!-- ═══════════════ MODAL: CRÉER MA PLAYLIST SUR-MESURE ═══════════════ -->
+  <div id="modal-create-playlist" class="modal-backdrop hidden">
+    <div class="modal-card modal-create-pl-card">
+      <button class="modal-close" id="btn-close-create-pl">&times;</button>
+      <div class="modal-header">
+        <div class="modal-brand-icon">🛠️</div>
+        <h2 class="modal-title">Créer ma Playlist Sur-Mesure</h2>
+        <p class="modal-subtitle">Recherche des morceaux en direct, écoute des extraits et compose ton Blind Test unique !</p>
+      </div>
+
+      <div class="create-pl-meta-form">
+        <div class="create-pl-row">
+          <div class="create-pl-field flex-2">
+            <label for="create-pl-name">Nom de la playlist *</label>
+            <input type="text" id="create-pl-name" placeholder="Ex: Mes Pépites Rap & R&B, Soirée d'été..." class="styled-input" autocomplete="off">
+          </div>
+          <div class="create-pl-field flex-1">
+            <label for="create-pl-emoji">Emoji</label>
+            <input type="text" id="create-pl-emoji" value="🎧" maxlength="4" class="styled-input text-center">
+          </div>
+        </div>
+        <div class="create-pl-field">
+          <label for="create-pl-desc">Description (optionnelle)</label>
+          <input type="text" id="create-pl-desc" placeholder="Ex: Les bangers préférés de notre bande pour les soirées" class="styled-input" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Barre de recherche de morceaux live -->
+      <div class="create-pl-search-zone">
+        <label class="create-pl-label">Rechercher un son (titre ou artiste) 🔍</label>
+        <div class="search-input-wrapper">
+          <input type="text" id="create-pl-search-input" placeholder="Tape un artiste ou titre (ex: Gazo, Djadja, Daft Punk, The Weeknd...)" class="styled-input search-input" autocomplete="off">
+          <span id="create-pl-search-spinner" class="search-mini-spinner hidden"></span>
+        </div>
+        <div id="create-pl-search-results" class="search-results-list">
+          <!-- Dynamically filled with search results with audio preview and '+' button -->
+        </div>
+      </div>
+
+      <!-- Morceaux sélectionnés dans la playlist -->
+      <div class="create-pl-selected-zone">
+        <div class="selected-header">
+          <h4 class="selected-title">Morceaux sélectionnés (<span id="create-pl-selected-count">0</span>)</h4>
+          <button id="btn-clear-selected-tracks" class="btn-text-danger" style="display:none;">Tout vider</button>
+        </div>
+        <div id="create-pl-selected-empty" class="selected-empty-state">
+          <span>🎵</span>
+          <p>Aucun morceau ajouté pour l'instant.<br>Recherche des titres ci-dessus et clique sur <b>+ Ajouter</b>.</p>
+        </div>
+        <ul id="create-pl-selected-list" class="selected-tracks-list">
+          <!-- Dynamic list of tracks in custom playlist with remove button -->
+        </ul>
+      </div>
+
+      <div class="modal-footer-actions">
+        <button id="btn-save-custom-playlist" class="btn btn-yellow btn-lg btn-block" disabled>
+          💾 Enregistrer ma playlist (0 morceaux)
+        </button>
       </div>
     </div>
   </div>

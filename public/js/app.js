@@ -442,7 +442,8 @@
 
       let ptsText = `+${points} pts`;
       if (bonusSpeed) ptsText += ` (+${bonusSpeed} vitesse)`;
-      if (streak > 1) ptsText += ` (Série x${streak} !)`;
+      if (data.feat_detected) ptsText += ` • 🎙️ Feat cité (+${data.feat_bonus || 150} pts) !`;
+      if (data.streak >= 2) ptsText += ` • ${data.streakLabel || ('🔥 Série x' + data.streak)} !`;
       if (fbPts) fbPts.textContent = ptsText;
 
       fb.className = 'game-feedback correct';
@@ -482,25 +483,68 @@
     SpeechInput.stopListening();
 
     const track = data.result.track || data.result.correctAnswer;
-    const answers = data.result.answers;
-    const scores = data.result.scores || data.result.playerResults;
+    const playerResults = data.result.playerResults || data.result.scores || [];
 
-    // Révéler la cover sur le disque vinyle
-    const vinylCenter = $('#g-vinyl-center');
-    const vinylCover = $('#g-cover');
-    if (vinylCenter) vinylCenter.style.display = 'none';
+    // Numéro de round
+    const roundNumEl = $('#re-round-num');
+    if (roundNumEl) roundNumEl.textContent = data.result.roundNumber || state.room?.currentRound || '1';
 
     if (track) {
-      if (vinylCover) {
-        vinylCover.src = track.cover || '';
-        vinylCover.style.display = 'block';
-      }
+      const coverBig = track.coverBig || track.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80';
       const cCover = $('#g-correct-cover');
       const cArtist = $('#g-correct-artist');
       const cTitle = $('#g-correct-title');
-      if (cCover) cCover.src = track.cover || '';
-      if (cArtist) cArtist.textContent = track.artist || 'Artiste inconnu';
-      if (cTitle) cTitle.textContent = track.title || 'Titre';
+      const featBadge = $('#re-feat-badge');
+      const featName = $('#re-feat-name');
+
+      if (cCover) cCover.src = coverBig;
+      if (cArtist) cArtist.textContent = track.cleanArtist || track.artist || 'Artiste inconnu';
+      if (cTitle) cTitle.textContent = track.cleanTitle || track.title || 'Titre';
+
+      // Badge Feat
+      if (featBadge && featName) {
+        if (track.featArtist) {
+          featName.textContent = track.featArtist;
+          featBadge.classList.remove('hidden');
+        } else {
+          featBadge.classList.add('hidden');
+        }
+      }
+
+      // Performance du joueur local
+      const myRes = playerResults.find(p => p.name === user.name) ||
+                    (state.socketId && playerResults.find(p => p.id === state.socketId));
+      const chipRes = $('#re-chip-result');
+      const chipStreak = $('#re-chip-streak');
+      const chipFeat = $('#re-chip-feat');
+
+      if (chipRes) {
+        if (myRes && (myRes.isCorrect || myRes.points > 0)) {
+          chipRes.textContent = `✅ Trouvé (+${myRes.points} pts)`;
+          chipRes.className = 're-status-chip';
+        } else {
+          chipRes.textContent = `❌ Pas trouvé (0 pt)`;
+          chipRes.className = 're-status-chip chip-missed';
+        }
+      }
+
+      if (chipStreak) {
+        if (myRes && myRes.streak >= 2) {
+          chipStreak.textContent = `${myRes.streakLabel || ('🔥 Série x' + myRes.streak)} (+${myRes.streakBonus || 0} pts)`;
+          chipStreak.classList.remove('hidden');
+        } else {
+          chipStreak.classList.add('hidden');
+        }
+      }
+
+      if (chipFeat) {
+        if (myRes && myRes.featDetected) {
+          chipFeat.textContent = `🎙️ Bonus Feat Cité (+${myRes.featBonus || 150} pts)`;
+          chipFeat.classList.remove('hidden');
+        } else {
+          chipFeat.classList.add('hidden');
+        }
+      }
 
       // 📜 Mukiz Left History sidebar addition
       const histEmpty = $('#g-history-empty');
@@ -508,14 +552,14 @@
 
       const histList = $('#g-history-list');
       if (histList) {
-        const isCorrect = state.hasAnswered;
+        const isCorrect = myRes ? (myRes.isCorrect || myRes.points > 0) : state.hasAnswered;
         const li = document.createElement('li');
         li.className = 'history-item';
         li.innerHTML = `
-          <img src="${track.cover || 'https://cdn-images.dzcdn.net/images/cover/134778e4c4f19ea71c82408300925a9a/250x250-000000-80-0-0.jpg'}" alt="" class="history-thumb">
+          <img src="${coverBig}" alt="" class="history-thumb">
           <div class="history-meta">
-            <div class="history-track">${escapeHtml(track.title || 'Titre')}</div>
-            <div class="history-artist">${escapeHtml(track.artist || 'Artiste')}</div>
+            <div class="history-track">${escapeHtml(track.cleanTitle || track.title || 'Titre')}</div>
+            <div class="history-artist">${escapeHtml(track.cleanArtist || track.artist || 'Artiste')}</div>
           </div>
           <span class="history-status">${isCorrect ? '✅' : '❌'}</span>
         `;
@@ -523,27 +567,46 @@
       }
     }
 
-    // Résultats du round
+    // Résultats du round (scores & streaks)
     const list = $('#g-round-results');
-    if (list && scores) {
-      list.innerHTML = scores.map(s => {
-        const pAnswer = answers?.[s.id];
-        const icon = pAnswer?.success ? '✅' : '❌';
+    if (list && playerResults.length > 0) {
+      list.innerHTML = playerResults.map(s => {
+        const isCorrect = s.isCorrect || (s.points > 0);
         return `
-          <li class="result-player-item ${pAnswer?.success ? 'success' : ''}">
-            <span class="res-player">${escapeHtml(s.name)}</span>
-            <span class="res-points">${icon} +${pAnswer?.points || 0} pts</span>
-            <span class="res-total">Total: ${s.score}</span>
+          <li class="re-player-row">
+            <span class="re-player-name">
+              ${escapeHtml(s.name)}
+              ${(s.streak >= 2) ? `<span class="re-player-streak-badge">${s.streakLabel || ('🔥 x' + s.streak)}</span>` : ''}
+              ${s.featDetected ? `<span class="re-feat-badge" style="font-size:0.7rem;padding:2px 6px;">🎙️ Feat</span>` : ''}
+            </span>
+            <span class="re-player-points">
+              ${isCorrect ? '✅' : '❌'} +${s.points || 0} pts (Total: ${s.totalScore ?? s.score ?? 0})
+            </span>
           </li>
         `;
       }).join('');
     }
 
-    // Mise à jour des scores
-    if (state.room && scores) {
-      scores.forEach(s => {
-        const p = state.room.players?.find(pl => pl.id === s.id);
-        if (p) p.score = s.score;
+    // Compte à rebours du round end (5s)
+    let reCountdown = 5;
+    const cdEl = $('#re-countdown');
+    if (cdEl) cdEl.textContent = reCountdown;
+    const cdInterval = setInterval(() => {
+      reCountdown--;
+      if (cdEl) cdEl.textContent = Math.max(0, reCountdown);
+      if (reCountdown <= 0) {
+        clearInterval(cdInterval);
+      }
+    }, 1000);
+
+    // Mise à jour des scores dans le room state
+    if (state.room && playerResults.length > 0) {
+      playerResults.forEach(s => {
+        const p = state.room.players?.find(pl => pl.name === s.name || pl.id === s.id);
+        if (p) {
+          p.score = s.totalScore ?? s.score ?? p.score;
+          p.streak = s.streak ?? p.streak;
+        }
       });
       updateMiniScoreboard();
     }
@@ -866,9 +929,13 @@
       filtered = filtered.filter(p => ['pop-2020s', 'rap-fr-2020s', 'french-touch', 'films', 'disney-fr', 'mix'].includes(p.key) || p.isCustom);
     }
 
-    // Filter by category tag (Genres, Décennies, Thèmes)
+    // Filter by category tag (Artistes, Genres, Décennies, Thèmes, Custom)
     if (category && category !== 'all') {
-      filtered = filtered.filter(p => p.category === category);
+      if (category === 'custom') {
+        filtered = filtered.filter(p => p.category === 'custom' || p.isCustom);
+      } else {
+        filtered = filtered.filter(p => p.category === category);
+      }
     }
 
     grid.innerHTML = filtered.map(p => {
@@ -1151,6 +1218,260 @@
   }
 
   // ═══════════════════════════════════════
+  // CUSTOM PLAYLIST CREATOR (SEARCH & BUILD)
+  // ═══════════════════════════════════════
+  let customCreatorTracks = [];
+  let previewAudioPlayer = new Audio();
+  let currentlyPlayingPreviewUrl = null;
+
+  function initCustomPlaylistCreator() {
+    const btnOpen = $('#btn-open-create-playlist-modal');
+    const modal = $('#modal-create-playlist');
+    const btnClose = $('#btn-close-create-pl');
+    const searchInput = $('#create-pl-search-input');
+    const searchSpinner = $('#create-pl-search-spinner');
+    const resultsList = $('#create-pl-search-results');
+    const selectedList = $('#create-pl-selected-list');
+    const selectedEmpty = $('#create-pl-selected-empty');
+    const selectedCount = $('#create-pl-selected-count');
+    const btnClear = $('#btn-clear-selected-tracks');
+    const btnSave = $('#btn-save-custom-playlist');
+    const nameInput = $('#create-pl-name');
+    const emojiInput = $('#create-pl-emoji');
+    const descInput = $('#create-pl-desc');
+
+    btnOpen?.addEventListener('click', () => {
+      openModal('modal-create-playlist');
+      updateSelectedUI();
+    });
+
+    btnClose?.addEventListener('click', () => {
+      stopPreviewAudio();
+      closeModal('modal-create-playlist');
+    });
+
+    // Debounced search
+    let searchDebounce = null;
+    searchInput?.addEventListener('input', () => {
+      clearTimeout(searchDebounce);
+      const q = searchInput.value.trim();
+      if (!q) {
+        if (resultsList) resultsList.innerHTML = '';
+        return;
+      }
+
+      searchDebounce = setTimeout(async () => {
+        searchSpinner?.classList.remove('hidden');
+        try {
+          const res = await fetch(`/api/tracks/search?q=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          renderSearchResults(data.tracks || []);
+        } catch (err) {
+          console.error('[Search] Error:', err);
+        } finally {
+          searchSpinner?.classList.add('hidden');
+        }
+      }, 300);
+    });
+
+    function renderSearchResults(tracks) {
+      if (!resultsList) return;
+      if (tracks.length === 0) {
+        resultsList.innerHTML = '<div style="padding:12px;text-align:center;color:#94a3b8;font-size:0.85rem;">Aucun morceau trouvé pour cette recherche.</div>';
+        return;
+      }
+
+      resultsList.innerHTML = tracks.map(t => {
+        const isAdded = customCreatorTracks.some(st => st.id === t.id);
+        return `
+          <div class="search-track-item" data-id="${t.id}">
+            <div class="search-track-left">
+              <img src="${t.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&q=80'}" alt="" class="search-track-thumb">
+              <div class="search-track-info">
+                <span class="search-track-title">${escapeHtml(t.title)}</span>
+                <span class="search-track-artist">${escapeHtml(t.artist)}</span>
+              </div>
+            </div>
+            <div class="search-track-actions">
+              ${t.preview ? `<button class="btn-track-preview" data-preview="${t.preview}" title="Écouter l'extrait">🎧</button>` : ''}
+              <button class="btn-track-add ${isAdded ? 'added' : ''}" data-id="${t.id}">
+                ${isAdded ? '✓ Ajouté' : '+ Ajouter'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Preview audio
+      resultsList.querySelectorAll('.btn-track-preview').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const url = btn.getAttribute('data-preview');
+          togglePreviewAudio(url, btn);
+        });
+      });
+
+      // Add track
+      resultsList.querySelectorAll('.btn-track-add').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const track = tracks.find(t => String(t.id) === String(id));
+          if (track && !customCreatorTracks.some(st => st.id === track.id)) {
+            customCreatorTracks.push(track);
+            btn.textContent = '✓ Ajouté';
+            btn.classList.add('added');
+            updateSelectedUI();
+            UIEffects.showToast(`« ${track.title} » ajouté à ta playlist !`, 'success', 2000);
+          }
+        });
+      });
+    }
+
+    function togglePreviewAudio(url, btnEl) {
+      if (currentlyPlayingPreviewUrl === url) {
+        stopPreviewAudio();
+        if (btnEl) btnEl.textContent = '🎧';
+      } else {
+        stopPreviewAudio();
+        previewAudioPlayer.src = url;
+        previewAudioPlayer.play().catch(e => console.warn('Preview play error:', e));
+        currentlyPlayingPreviewUrl = url;
+        if (btnEl) btnEl.textContent = '⏸️';
+        previewAudioPlayer.onended = () => {
+          stopPreviewAudio();
+          if (btnEl) btnEl.textContent = '🎧';
+        };
+      }
+    }
+
+    function stopPreviewAudio() {
+      previewAudioPlayer.pause();
+      previewAudioPlayer.currentTime = 0;
+      currentlyPlayingPreviewUrl = null;
+      document.querySelectorAll('.btn-track-preview').forEach(b => b.textContent = '🎧');
+    }
+
+    function updateSelectedUI() {
+      const count = customCreatorTracks.length;
+      if (selectedCount) selectedCount.textContent = count;
+      if (btnSave) {
+        btnSave.disabled = count === 0;
+        btnSave.textContent = `💾 Enregistrer ma playlist (${count} morceau${count > 1 ? 'x' : ''})`;
+      }
+
+      if (count === 0) {
+        if (selectedEmpty) selectedEmpty.style.display = 'flex';
+        if (btnClear) btnClear.style.display = 'none';
+        if (selectedList) selectedList.innerHTML = '';
+      } else {
+        if (selectedEmpty) selectedEmpty.style.display = 'none';
+        if (btnClear) btnClear.style.display = 'inline-block';
+        if (selectedList) {
+          selectedList.innerHTML = customCreatorTracks.map((t, idx) => `
+            <li class="selected-track-row">
+              <div class="selected-track-left">
+                <span class="selected-track-num">#${idx + 1}</span>
+                <img src="${t.cover || ''}" alt="" class="selected-track-thumb">
+                <span class="selected-track-meta">${escapeHtml(t.artist)} — <b>${escapeHtml(t.title)}</b></span>
+              </div>
+              <button class="btn-track-remove" data-id="${t.id}" title="Supprimer">✕</button>
+            </li>
+          `).join('');
+
+          selectedList.querySelectorAll('.btn-track-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = btn.getAttribute('data-id');
+              customCreatorTracks = customCreatorTracks.filter(t => String(t.id) !== String(id));
+              updateSelectedUI();
+              // Update status in search list if visible
+              const searchBtn = resultsList?.querySelector(`.btn-track-add[data-id="${id}"]`);
+              if (searchBtn) {
+                searchBtn.textContent = '+ Ajouter';
+                searchBtn.classList.remove('added');
+              }
+            });
+          });
+        }
+      }
+    }
+
+    btnClear?.addEventListener('click', () => {
+      customCreatorTracks = [];
+      updateSelectedUI();
+      resultsList?.querySelectorAll('.btn-track-add').forEach(b => {
+        b.textContent = '+ Ajouter';
+        b.classList.remove('added');
+      });
+    });
+
+    // Save Custom Playlist
+    btnSave?.addEventListener('click', async () => {
+      const name = nameInput ? nameInput.value.trim() : '';
+      if (!name) {
+        UIEffects.showToast('Donne un nom à ta playlist !', 'error', 3000);
+        nameInput?.focus();
+        return;
+      }
+
+      if (customCreatorTracks.length === 0) {
+        UIEffects.showToast('Ajoute au moins 1 morceau à ta playlist !', 'warning', 3000);
+        return;
+      }
+
+      const emoji = emojiInput ? emojiInput.value.trim() : '🎧';
+      const desc = descInput ? descInput.value.trim() : '';
+
+      btnSave.disabled = true;
+      btnSave.textContent = 'Enregistrement en cours…';
+
+      try {
+        const res = await fetch('/api/playlists/custom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            emoji,
+            description: desc,
+            tracks: customCreatorTracks,
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.playlist) {
+          saveCustomPlaylistToStorage(data.playlist);
+          state.playlists.unshift(data.playlist);
+          populatePlaylistSelect(state.playlists);
+          renderPlaylistsGrid(state.playlists);
+          renderSavedSpotifyPlaylists();
+
+          UIEffects.showToast(`🎉 Playlist « ${data.playlist.name} » créée avec succès !`, 'success', 5000);
+          closeModal('modal-create-playlist');
+          stopPreviewAudio();
+
+          // Reset inputs
+          if (nameInput) nameInput.value = '';
+          if (descInput) descInput.value = '';
+          if (searchInput) searchInput.value = '';
+          if (resultsList) resultsList.innerHTML = '';
+          customCreatorTracks = [];
+          updateSelectedUI();
+
+          // Ouvrir les détails de la nouvelle playlist
+          openPlaylistDetailsModal(data.playlist.key);
+        } else {
+          UIEffects.showToast(data.message || 'Erreur lors de la création', 'error', 4000);
+        }
+      } catch (err) {
+        console.error('[Create Playlist] Error:', err);
+        UIEffects.showToast('Erreur serveur', 'error', 4000);
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = `💾 Enregistrer ma playlist (${customCreatorTracks.length} morceaux)`;
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════
   // MINI SCOREBOARD
   // ═══════════════════════════════════════
   function updateMiniScoreboard() {
@@ -1163,6 +1484,7 @@
       <div class="mini-score-item ${p.id === state.socketId ? 'is-me' : ''}">
         <span class="mini-pos">${idx === 0 ? '👑' : `#${idx + 1}`}</span>
         <span class="mini-score-name">${escapeHtml(p.name)}</span>
+        ${(p.streak >= 2) ? `<span class="re-player-streak-badge" title="Série de victoires">🔥 x${p.streak}</span>` : ''}
         <span class="mini-score-value">${p.score || 0}</span>
       </div>
     `).join('');
@@ -1663,9 +1985,10 @@
     SpeechInput.init();
     UIEffects.init();
     loadCustomPlaylistsFromStorage();
+    initCustomPlaylistCreator();
     connectWebSocket();
     bindEvents();
-    console.log('[App] Initialisé avec Mukiz Auth, Cards enrichies, Cover du son & Spotify Connect !');
+    console.log('[App] Initialisé avec Mukiz Auth, Cards enrichies, Cover du son, Spotify Connect & Playlist Creator !');
   }
 
   if (document.readyState === 'loading') {
