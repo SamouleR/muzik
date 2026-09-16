@@ -627,7 +627,7 @@ const PLAYLISTS = {
     emoji: '🎙️',
     color: '#4B5563',
     category: 'artists',
-    trackCount: 70,
+    trackCount: 120,
     difficulty: 'MOYEN',
     description: 'Slim Shady : Lose Yourself, Without Me, Rap God, The Real Slim Shady',
     cover: 'https://cdn-images.dzcdn.net/images/artist/1947b7fbe13ba4cf3a9ab8e4e94b8e61/500x500-000000-80-0-0.jpg',
@@ -635,6 +635,126 @@ const PLAYLISTS = {
       'https://cdn-images.dzcdn.net/images/cover/406606a6ea46e13883a48e7e1ef563e4/250x250-000000-80-0-0.jpg',
       'https://cdn-images.dzcdn.net/images/cover/425fb8433363401fa55e88ecb5ee720f/250x250-000000-80-0-0.jpg',
       'https://cdn-images.dzcdn.net/images/cover/73b741e3e925f5bb9b27ae2b3c2c78a7/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-pnl': {
+    name: '100% PNL',
+    emoji: '☁️',
+    color: '#0EA5E9',
+    category: 'artists',
+    trackCount: 90,
+    difficulty: 'FACILE',
+    description: 'Deux Frères, Dans la légende, Le Monde Chico : Au DD, DA, Onizuka...',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/773a46fb3e75e0e0a5ca4a3e74ff1f73/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/184c410ed1a734d985ae85211f7ab313/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/eb4290d46e35397743bb64d5a5efcfbd/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/914db9146f330d0a2969d157872da5eb/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-taylor-swift': {
+    name: '100% Taylor Swift',
+    emoji: '✨',
+    color: '#EC4899',
+    category: 'artists',
+    trackCount: 150,
+    difficulty: 'FACILE',
+    description: 'Eras Tour : Shake It Off, Blank Space, Cruel Summer, Anti-Hero, Cardigan',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/2594a9d7b42aa155c5e855c27db11330/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/f8364f090ba04f1b19b381ec0390f3e4/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/e68da86fd7976135c2d2d1715afaef7c/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-tiakola': {
+    name: '100% Tiakola',
+    emoji: '🌟',
+    color: '#3B82F6',
+    category: 'artists',
+    trackCount: 75,
+    difficulty: 'FACILE',
+    description: 'Le mélomane du rap FR : Mélo, Si j\'savais, Gasolina, Meridian, BDLM',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/b621e25e98399583b4009bb4f95e54c8/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/7d4e409a12fd290a253ab4320b53964b/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/1428de52b8c0427a770e6e8a61e9c1f3/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/eb4290d46e35397743bb64d5a5efcfbd/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-sdm': {
+    name: '100% SDM',
+    emoji: '🔴',
+    color: '#DC2626',
+    category: 'artists',
+    trackCount: 80,
+    difficulty: 'FACILE',
+    description: 'Bolide Allemand, Liens du 100, Mr Ocho, Cartel Santos, Pour elle',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/066efadbf36077fb57eb77353f81e64a/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/7d4e409a12fd290a253ab4320b53964b/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/1428de52b8c0427a770e6e8a61e9c1f3/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/184c410ed1a734d985ae85211f7ab313/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  '100-queen': {
+    name: '100% Queen',
+    emoji: '👑',
+    color: '#F59E0B',
+    category: 'artists',
+    trackCount: 110,
+    difficulty: 'FACILE',
+    description: 'Freddie Mercury : Bohemian Rhapsody, Don\'t Stop Me Now, We Will Rock You',
+    cover: 'https://cdn-images.dzcdn.net/images/artist/5f8ef1909e7c3b9b46ec6ba4cb740d5b/500x500-000000-80-0-0.jpg',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/247b228179aea3b083eef43522b78b45/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/64e54e307bd5e2bdb27ffeb662fd910d/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/03db026c48d42d3ad743f07a7e324ef5/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  'foot-clubs': {
+    name: 'Musique de club de football',
+    emoji: '⚽',
+    color: '#10B981',
+    category: 'themes',
+    trackCount: 45,
+    difficulty: 'FACILE',
+    description: 'Hymnes de stades, célébrations légendaires et chants de supporters',
+    cover: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&q=80',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/b43db026f39e31d4e0b04323e4ea3e61/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/6c65b16954203649069d3568c85ae763/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/7eb56ae534d0b16f34e9e5e7fa92eb9a/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  'moteurs-autos': {
+    name: 'Moteurs & Voitures',
+    emoji: '🏎️',
+    color: '#F59E0B',
+    category: 'themes',
+    trackCount: 50,
+    difficulty: 'MOYEN',
+    description: 'Sons de bolides, Fast & Furious, bangers pour rouler de nuit',
+    cover: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/03db026c48d42d3ad743f07a7e324ef5/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/43bd78a4753df33da9efc2207c4286ee/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/250x250-000000-80-0-0.jpg'
+    ]
+  },
+  'wwe-entrees': {
+    name: 'Entrées de catcheurs',
+    emoji: '🤼',
+    color: '#8B5CF6',
+    category: 'themes',
+    trackCount: 40,
+    difficulty: 'MOYEN',
+    description: 'Thèmes d\'entrée iconiques : John Cena, Undertaker, Triple H',
+    cover: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?w=500&q=80',
+    previewCovers: [
+      'https://cdn-images.dzcdn.net/images/cover/8fa5be51fc239c07ec7ae44c2079fe03/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/eb4290d46e35397743bb64d5a5efcfbd/250x250-000000-80-0-0.jpg',
+      'https://cdn-images.dzcdn.net/images/cover/184c410ed1a734d985ae85211f7ab313/250x250-000000-80-0-0.jpg'
     ]
   },
 };
@@ -680,6 +800,9 @@ const PLAYLIST_QUERIES = {
   '100-daft-punk': ['Daft Punk One More Time', 'Daft Punk Get Lucky', 'Daft Punk Around the World', 'Daft Punk Harder Better Faster'],
   '100-michael-jackson': ['Michael Jackson Thriller', 'Michael Jackson Billie Jean', 'Michael Jackson Beat It', 'Michael Jackson Smooth Criminal', 'Michael Jackson Bad'],
   '100-eminem': ['Eminem Lose Yourself', 'Eminem Without Me', 'Eminem The Real Slim Shady', 'Eminem Rap God', 'Eminem Stan'],
+  'foot-clubs': ['Allez Paris Saint-Germain', 'Jump Van Halen OM', 'Liverpool Youll Never Walk Alone', 'Real Madrid Hala Madrid', 'Magic System Premier Gaou', 'Gloria Gaynor I Will Survive'],
+  'moteurs-autos': ['Tokyo Drift Teriyaki Boyz', 'Fast and Furious See You Again', 'Gasolina Daddy Yankee', 'Kavinsky Nightcall', 'Born to be Wild Steppenwolf'],
+  'wwe-entrees': ['John Cena The Time is Now', 'Motorhead The Game', 'The Undertaker Theme', 'Randy Orton Voices', 'Edge Metalingus'],
 };
 
 // Cache
@@ -715,60 +838,161 @@ async function searchTracks(query, limit = 10) {
 }
 
 /**
- * Récupère la discographie complète d'un artiste en direct via l'API Deezer
- * Retourne jusqu'à 100 morceaux avec extraits audio 30s et la photo HD portrait de l'artiste
+ * Recherche d'artistes en direct via l'API Deezer (avec tri par popularité)
  */
-async function getArtistDiscography(artistName, limit = 100) {
-  const cacheKey = `discography:${artistName.toLowerCase()}`;
+async function searchArtists(query, limit = 8) {
+  if (!query || !query.trim()) return [];
+  const cacheKey = `artist_search:${query.trim().toLowerCase()}`;
+  const cached = trackCache.get(cacheKey);
+  if (cached && Date.now() - cached.time < CACHE_TTL) return cached.data;
+
+  try {
+    const res = await deezerFetch(`/search/artist?q=${encodeURIComponent(query.trim())}&limit=15`);
+    const candidates = res.data || [];
+    const cleanQ = query.trim().toLowerCase();
+
+    candidates.sort((a, b) => {
+      const aExact = a.name.toLowerCase() === cleanQ ? 1 : 0;
+      const bExact = b.name.toLowerCase() === cleanQ ? 1 : 0;
+      if (aExact !== bExact) return bExact - aExact;
+      return (b.nb_fan || 0) - (a.nb_fan || 0);
+    });
+
+    const seen = new Set();
+    const uniqueCandidates = [];
+    for (const c of candidates) {
+      const lower = c.name.toLowerCase().trim();
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        uniqueCandidates.push(c);
+      }
+    }
+
+    const results = uniqueCandidates.slice(0, limit).map(a => ({
+      id: a.id,
+      name: a.name,
+      picture: a.picture_xl || a.picture_big || a.picture_medium || a.picture,
+      nb_fan: a.nb_fan || 0,
+      nb_album: a.nb_album || 0,
+      key: '100-' + encodeURIComponent(a.name.toLowerCase().replace(/\s+/g, '-')),
+    }));
+
+    trackCache.set(cacheKey, { data: results, time: Date.now() });
+    return results;
+  } catch (e) {
+    console.warn('[Music] Artist search error:', e.message);
+    return [];
+  }
+}
+
+/**
+ * Récupère la discographie complète et quasi-infinie d'un artiste
+ * Combine : Top hits 100, Recherches paginées (index 0, 100), Albums studio
+ * Retourne jusqu'à 250+ morceaux avec extraits audio 30s certifiés et photo HD
+ */
+async function getArtistDiscography(artistName, limit = 250) {
+  const cleanKey = artistName.trim().toLowerCase();
+  const cacheKey = `discography:${cleanKey}`;
   const cached = trackCache.get(cacheKey);
   if (cached && Date.now() - cached.time < CACHE_TTL) {
     return cached.data;
   }
 
   try {
-    // 1. Trouver l'artiste
-    const searchRes = await deezerFetch(`/search/artist?q=${encodeURIComponent(artistName)}&limit=1`);
-    const artist = searchRes.data?.[0];
-    if (!artist) {
+    // 1. Trouver l'artiste officiel (tri par nb de fans pour éviter les homonymes amateurs)
+    const searchRes = await deezerFetch(`/search/artist?q=${encodeURIComponent(artistName)}&limit=10`);
+    const candidates = searchRes.data || [];
+    if (candidates.length === 0) {
       return await searchTracks(artistName, limit);
     }
 
+    candidates.sort((a, b) => {
+      const aExact = a.name.toLowerCase() === cleanKey ? 1 : 0;
+      const bExact = b.name.toLowerCase() === cleanKey ? 1 : 0;
+      if (aExact !== bExact) return bExact - aExact;
+      return (b.nb_fan || 0) - (a.nb_fan || 0);
+    });
+
+    const artist = candidates[0];
     const artistId = artist.id;
     const artistPhoto = artist.picture_xl || artist.picture_big || artist.picture_medium;
     const realArtistName = artist.name;
 
-    // 2. Récupérer les top morceaux de l'artiste
-    const topRes = await deezerFetch(`/artist/${artistId}/top?limit=100`);
-    let tracks = (topRes.data || []).filter(t => t.preview && t.preview !== '');
+    const rawTracks = [];
 
-    // 3. Compléter si nécessaire avec la recherche étendue
-    if (tracks.length < 50) {
-      const searchTracksRes = await deezerFetch(`/search/track?q=artist:"${encodeURIComponent(realArtistName)}"&limit=100`);
-      const moreTracks = (searchTracksRes.data || []).filter(t => t.preview && t.preview !== '');
-      const existingIds = new Set(tracks.map(t => t.id));
-      for (const t of moreTracks) {
-        if (!existingIds.has(t.id)) {
-          tracks.push(t);
-          existingIds.add(t.id);
-        }
+    // 2. Top tracks (jusqu'à 100 morceaux les plus streamés)
+    try {
+      const topRes = await deezerFetch(`/artist/${artistId}/top?limit=100`);
+      if (topRes.data && Array.isArray(topRes.data)) {
+        rawTracks.push(...topRes.data);
       }
+    } catch (err) {
+      console.warn(`[Discography] Top tracks notice:`, err.message);
     }
 
-    const mapped = tracks.map(t => ({
-      id: t.id,
-      title: t.title_short || t.title,
-      artist: t.artist?.name || realArtistName,
-      artistPhoto: artistPhoto,
-      album: t.album?.title,
-      cover: t.album?.cover_medium || t.album?.cover,
-      coverBig: t.album?.cover_big || t.album?.cover_medium,
-      preview: t.preview,
-      duration: t.duration,
-      source: 'deezer',
-    }));
+    // 3. Recherche paginée sur la discographie (index 0 et 100)
+    try {
+      const p1 = await deezerFetch(`/search/track?q=artist:"${encodeURIComponent(realArtistName)}"&limit=100&index=0`);
+      if (p1.data) rawTracks.push(...p1.data);
+    } catch (_) {}
 
-    trackCache.set(cacheKey, { data: mapped, time: Date.now() });
-    return mapped;
+    try {
+      const p2 = await deezerFetch(`/search/track?q=artist:"${encodeURIComponent(realArtistName)}"&limit=100&index=100`);
+      if (p2.data) rawTracks.push(...p2.data);
+    } catch (_) {}
+
+    // 4. Albums studio (si on veut encore plus de profondeur de catalogue)
+    if (rawTracks.length < 150) {
+      try {
+        const albumsRes = await deezerFetch(`/artist/${artistId}/albums?limit=6`);
+        const albums = albumsRes.data || [];
+        for (const alb of albums) {
+          try {
+            const albTracks = await deezerFetch(`/album/${alb.id}/tracks?limit=25`);
+            if (albTracks.data) {
+              for (const t of albTracks.data) {
+                if (t.preview) {
+                  rawTracks.push({
+                    ...t,
+                    artist: { name: realArtistName },
+                    album: { title: alb.title, cover_medium: alb.cover_medium, cover_big: alb.cover_big }
+                  });
+                }
+              }
+            }
+          } catch (_) {}
+        }
+      } catch (_) {}
+    }
+
+    // 5. Dédoublonnage strict par titre normalisé et filtrage des previews valides
+    const seenTitles = new Set();
+    const cleanTracks = [];
+
+    for (const t of rawTracks) {
+      if (!t.preview || !t.preview.startsWith('http')) continue;
+      const normTitle = (t.title_short || t.title || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim();
+      if (!normTitle || seenTitles.has(normTitle)) continue;
+      seenTitles.add(normTitle);
+
+      cleanTracks.push({
+        id: t.id,
+        title: t.title_short || t.title,
+        artist: t.artist?.name || realArtistName,
+        artistPhoto: artistPhoto,
+        album: t.album?.title || 'Single / Album',
+        cover: t.album?.cover_medium || t.album?.cover || artistPhoto,
+        coverBig: t.album?.cover_big || t.album?.cover_medium || artistPhoto,
+        preview: t.preview,
+        duration: t.duration || 30,
+        source: 'deezer',
+      });
+    }
+
+    console.log(`[Music] Catalogue 100% "${realArtistName}" : ${cleanTracks.length} titres avec extraits audio chargés.`);
+    trackCache.set(cacheKey, { data: cleanTracks, time: Date.now() });
+    return cleanTracks;
+
   } catch (err) {
     console.error(`[Discography] Error for "${artistName}":`, err.message);
     return await searchTracks(artistName, limit);
@@ -790,9 +1014,9 @@ async function getRandomTracks(playlistKey, count = 10) {
     return shuffled.slice(0, Math.min(count, shuffled.length));
   }
 
-  // Dynamic 100% Artist playlist loader
+  // Dynamic 100% Artist playlist loader (infini pour TOUT artiste)
   if (playlistKey.startsWith('100-')) {
-    const artistSlug = playlistKey.replace('100-', '');
+    const artistSlug = playlistKey.replace(/^100-/, '');
     const ARTIST_MAP = {
       'jul': 'Jul',
       'ninho': 'Ninho',
@@ -814,9 +1038,16 @@ async function getRandomTracks(playlistKey, count = 10) {
       'pnl': 'PNL',
       'nekfeu': 'Nekfeu',
       'hamza': 'Hamza',
+      'taylor-swift': 'Taylor Swift',
+      'queen': 'Queen',
+      'rihanna': 'Rihanna',
+      'beyonce': 'Beyoncé',
+      'orelsan': 'Orelsan',
+      'angele': 'Angèle',
+      'stromae': 'Stromae',
     };
-    const artistName = ARTIST_MAP[artistSlug] || artistSlug.replace('-', ' ');
-    const discography = await getArtistDiscography(artistName, 100);
+    const artistName = ARTIST_MAP[artistSlug.toLowerCase()] || decodeURIComponent(artistSlug).replace(/[-_]/g, ' ');
+    const discography = await getArtistDiscography(artistName, 250);
     if (discography.length > 0) {
       const shuffled = [...discography];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -1055,6 +1286,7 @@ function createCustomPlaylist({ name, description, emoji, tracks }) {
 
 module.exports = {
   searchTracks,
+  searchArtists,
   getRandomTracks,
   getArtistDiscography,
   getSpotifyTopTracks,

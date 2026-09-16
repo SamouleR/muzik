@@ -3,14 +3,20 @@
   "version": "2.0.0",
   "description": "Blind Test Musical Multijoueur - Style Mukiz",
   "main": "server.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "express": "^4.21.0",
     "ws": "^8.18.0",
     "fuzzball": "^2.1.3",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

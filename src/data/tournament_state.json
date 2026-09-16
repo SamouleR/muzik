@@ -1,0 +1,171 @@
+[
+  {
+    "id": "tourney_masters_2026",
+    "name": "Grand Tournoi Muzik Masters 🏆",
+    "playlist": "mix",
+    "playlistName": "Hits Français & Internationaux",
+    "stage": "REGISTRATION",
+    "entryFee": 50,
+    "rewardCoins": 500,
+    "rewardBadge": "tournament_champ",
+    "rewardTitle": "👑 Grand Champion Muzik 2026",
+    "maxPlayers": 8,
+    "createdAt": 1789551469627,
+    "registeredPlayers": [
+      {
+        "id": "bot_1",
+        "name": "Alex_92",
+        "avatar": "🎧",
+        "score": 1420
+      },
+      {
+        "id": "bot_2",
+        "name": "Sarah_Music",
+        "avatar": "🌟",
+        "score": 1250
+      },
+      {
+        "id": "bot_3",
+        "name": "Maxime_Rap",
+        "avatar": "🎤",
+        "score": 1380
+      },
+      {
+        "id": "bot_4",
+        "name": "Léa_Pop",
+        "avatar": "🎵",
+        "score": 1190
+      },
+      {
+        "id": "bot_5",
+        "name": "DaftFan",
+        "avatar": "🤖",
+        "score": 1510
+      },
+      {
+        "id": "bot_6",
+        "name": "NinhoFan_93",
+        "avatar": "👑",
+        "score": 1340
+      }
+    ],
+    "matches": {
+      "quarters": [
+        {
+          "id": "Q1",
+          "p1": {
+            "name": "Alex_92",
+            "avatar": "🎧"
+          },
+          "p2": {
+            "name": "Léa_Pop",
+            "avatar": "🎵"
+          },
+          "score1": 1420,
+          "score2": 1190,
+          "winner": {
+            "name": "Alex_92",
+            "avatar": "🎧"
+          },
+          "status": "completed"
+        },
+        {
+          "id": "Q2",
+          "p1": {
+            "name": "Maxime_Rap",
+            "avatar": "🎤"
+          },
+          "p2": {
+            "name": "En attente...",
+            "avatar": "❓"
+          },
+          "score1": 0,
+          "score2": 0,
+          "winner": null,
+          "status": "pending"
+        },
+        {
+          "id": "Q3",
+          "p1": {
+            "name": "Sarah_Music",
+            "avatar": "🌟"
+          },
+          "p2": {
+            "name": "NinhoFan_93",
+            "avatar": "👑"
+          },
+          "score1": 1250,
+          "score2": 1340,
+          "winner": {
+            "name": "NinhoFan_93",
+            "avatar": "👑"
+          },
+          "status": "completed"
+        },
+        {
+          "id": "Q4",
+          "p1": {
+            "name": "DaftFan",
+            "avatar": "🤖"
+          },
+          "p2": {
+            "name": "En attente...",
+            "avatar": "❓"
+          },
+          "score1": 0,
+          "score2": 0,
+          "winner": null,
+          "status": "pending"
+        }
+      ],
+      "semis": [
+        {
+          "id": "S1",
+          "p1": {
+            "name": "Alex_92",
+            "avatar": "🎧"
+          },
+          "p2": {
+            "name": "Maxime_Rap",
+            "avatar": "🎤"
+          },
+          "score1": 0,
+          "score2": 0,
+          "winner": null,
+          "status": "pending"
+        },
+        {
+          "id": "S2",
+          "p1": {
+            "name": "NinhoFan_93",
+            "avatar": "👑"
+          },
+          "p2": {
+            "name": "DaftFan",
+            "avatar": "🤖"
+          },
+          "score1": 0,
+          "score2": 0,
+          "winner": null,
+          "status": "pending"
+        }
+      ],
+      "final": {
+        "id": "FINAL",
+        "p1": {
+          "name": "Finaliste 1",
+          "avatar": "⚔️"
+        },
+        "p2": {
+          "name": "Finaliste 2",
+          "avatar": "⚔️"
+        },
+        "score1": 0,
+        "score2": 0,
+        "winner": null,
+        "status": "pending"
+      }
+    },
+    "champion": null
+  }
+]

@@ -215,60 +215,64 @@ function evaluate(data) {
     Math.round((artistScore + titleScore) / 2)
   );
 
+  const artistThreshold = difficulty === 'EXPERT' ? 78 : (difficulty === 'INTERMEDIAIRE' ? 70 : 66);
+  const titleThreshold = difficulty === 'EXPERT' ? 75 : (difficulty === 'INTERMEDIAIRE' ? 62 : 58);
+  const featThreshold = 66;
+
+  const artistMatches = artistScore >= artistThreshold;
+  const titleMatches = titleScore >= titleThreshold || hasKeywordMatch(player_answer, targetTitle);
+
+  let featMatches = false;
+  let featScore = 0;
+  if (targetFeat) {
+    featScore = computeMatchScore(player_answer, targetFeat);
+    const featParts = targetFeat.split(/[,&]/).map(p => p.trim()).filter(Boolean);
+    const anyPartMatches = featParts.some(p => computeMatchScore(player_answer, p) >= featThreshold);
+    featMatches = featScore >= featThreshold || anyPartMatches;
+  }
+
   let isCorrect = false;
 
   switch (difficulty) {
     case 'DEBUTANT':
-      // Artiste OU titre correct suffit
-      isCorrect = artistScore >= 70 || titleScore >= 70;
+      isCorrect = artistMatches || titleMatches;
       break;
 
     case 'INTERMEDIAIRE':
-      // Artiste correct + au moins un mot-clé du titre
-      isCorrect = artistScore >= 72 && (
-        titleScore >= 60 ||
-        hasKeywordMatch(player_answer, targetTitle)
-      );
+      isCorrect = artistMatches && (titleMatches || hasKeywordMatch(player_answer, targetTitle));
       break;
 
     case 'EXPERT':
-      // Artiste ET titre quasi-exacts
-      isCorrect = artistScore >= 80 && titleScore >= 75;
+      isCorrect = artistScore >= 78 && titleScore >= 72;
       break;
 
     default:
-      // Fallback DEBUTANT
-      isCorrect = artistScore >= 70 || titleScore >= 70;
-  }
-
-  // Vérifier si le joueur a également cité le feat !
-  let featDetected = false;
-  let featBonus = 0;
-  if (isCorrect && targetFeat) {
-    const featScore = computeMatchScore(player_answer, targetFeat);
-    const featParts = targetFeat.split(/[,&]/).map(p => p.trim()).filter(Boolean);
-    const anyPartMatches = featParts.some(p => computeMatchScore(player_answer, p) >= 68);
-
-    if (featScore >= 68 || anyPartMatches) {
-      featDetected = true;
-      featBonus = 150;
-    }
+      isCorrect = artistMatches || titleMatches;
   }
 
   const accuracyScore = Math.min(100, Math.max(0, overallScore));
   let feedbackMessage = pickFeedback(isCorrect, accuracyScore, expected_artist, expected_title);
-  if (featDetected) {
+  if (featMatches) {
     feedbackMessage = `🎙️ ÉNORME ! T'as cité le feat (${targetFeat}) ! +150 pts bonus ! 🔥`;
   }
 
   return {
     is_correct: isCorrect,
+    artist_matches: artistMatches,
+    title_matches: titleMatches,
+    feat_matches: featMatches,
+    artist_score: artistScore,
+    title_score: titleScore,
+    feat_score: featScore,
+    target_artist: targetArtist,
+    target_title: targetTitle,
+    target_feat: targetFeat,
     accuracy_score: accuracyScore,
     feedback_message: feedbackMessage,
     has_feat: Boolean(targetFeat),
-    feat_detected: featDetected,
+    feat_detected: featMatches,
     feat_artist: targetFeat,
-    feat_bonus: featBonus,
+    feat_bonus: featMatches ? 150 : 0,
   };
 }
 

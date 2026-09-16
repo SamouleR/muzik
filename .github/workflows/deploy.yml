@@ -1,4 +1,4 @@
-name: Deploy to Hostinger
+name: 🚀 Deploy to Hostinger
 
 on:
   push:
@@ -7,21 +7,42 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Files
+    name: Deploy via SSH
     runs-on: ubuntu-latest
+
     steps:
-      - name: 🚚 Checkout Code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📂 Sync files to Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📦 Setup Node.js 16
+        uses: actions/setup-node@v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: domains/ralaikoa.com/public_html/muzik/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.env
+          node-version: '16'
+          cache: 'npm'
+
+      - name: 🔧 Install dependencies
+        run: npm install --production
+
+      - name: 🚀 Deploy to Hostinger via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            echo "📁 Navigation vers le dossier muzik..."
+            cd ~/muzik
+
+            echo "📥 Pull des derniers changements..."
+            git pull origin main
+
+            echo "📦 Installation des dépendances..."
+            npm install --production
+
+            echo "♻️  Redémarrage de l'application Node.js..."
+            # Passenger (cPanel) - touch restart.txt pour redémarrer
+            mkdir -p tmp
+            touch tmp/restart.txt
+
+            echo "✅ Déploiement terminé !"

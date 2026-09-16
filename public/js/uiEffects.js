@@ -201,16 +201,29 @@ const UIEffects = (() => {
   }
 
   // ═══════════════════════════════════════
-  // VIEW TRANSITIONS
+  // VIEW TRANSITIONS (Enhanced)
   // ═══════════════════════════════════════
+  const VIEW_ANIMATIONS = {
+    'view-home': 'viewSlideUp',
+    'view-playlists': 'viewSlideLeft',
+    'view-shop': 'viewFadeScale',
+    'view-quests': 'viewSlideUp',
+    'view-profile': 'viewSlideLeft',
+    'view-lobby': 'viewFadeScale',
+    'view-game': 'viewSlideUp',
+    'view-gameover': 'viewFadeScale',
+    'view-solo': 'viewSlideLeft',
+  };
+
   function switchView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const target = document.getElementById(viewId);
     if (target) {
       target.classList.add('active');
+      const animName = VIEW_ANIMATIONS[viewId] || 'viewSlideUp';
       target.style.animation = 'none';
       target.offsetHeight;
-      target.style.animation = 'viewFadeIn 0.4s ease';
+      target.style.animation = `${animName} 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
     }
   }
 
@@ -298,6 +311,49 @@ const UIEffects = (() => {
     tick();
   }
 
+  /**
+   * Anime une émote flottante sur l'écran
+   */
+  function spawnFloatingEmoji(emoji = '🔥', senderName = '') {
+    const el = document.createElement('div');
+    el.className = 'floating-emoji-particle';
+    
+    const randomX = Math.floor(15 + Math.random() * 70); // 15% to 85% width
+    const randomRotation = Math.floor((Math.random() - 0.5) * 40); // -20deg to 20deg
+    
+    el.innerHTML = `<span class="emoji-symbol">${emoji}</span>${senderName ? `<span class="emoji-sender">${senderName}</span>` : ''}`;
+    el.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      left: ${randomX}%;
+      transform: translateX(-50%) rotate(${randomRotation}deg);
+      font-size: 2.5rem;
+      pointer-events: none;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: floatUpReaction 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    `;
+
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2200);
+  }
+
+  /**
+   * Anti-XSS Sanitizer: Escape HTML characters
+   */
+  function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+  }
+
   function init() {
     initParticles();
   }
@@ -315,5 +371,7 @@ const UIEffects = (() => {
     scorePopup,
     showLoading,
     hideLoading,
+    spawnFloatingEmoji,
+    escapeHTML,
   };
 })();

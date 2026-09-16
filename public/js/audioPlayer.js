@@ -203,6 +203,177 @@ const AudioPlayer = (() => {
         gain.connect(masterGain);
         osc.start(now);
         osc.stop(now + 0.15);
+
+      } else if (type === 'powerup') {
+        // Arpège ascendant magique
+        [440, 554.37, 659.25, 880].forEach((freq, i) => {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.06);
+
+          gain.gain.setValueAtTime(0.4 * sfxVolume, now + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.25);
+
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start(now + i * 0.06);
+          osc.stop(now + i * 0.06 + 0.25);
+        });
+
+      } else if (type === 'fanfare') {
+        // Fanfare triomphale 3 notes C5 -> E5 -> G5 -> C6
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.12);
+
+          gain.gain.setValueAtTime(0.5 * sfxVolume, now + i * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
+
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start(now + i * 0.12);
+          osc.stop(now + i * 0.12 + 0.4);
+        });
+
+      } else if (type === 'combo') {
+        // Son de combo win streak
+        [880, 1108.73, 1318.51].forEach((freq, i) => {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now + i * 0.05);
+
+          gain.gain.setValueAtTime(0.3 * sfxVolume, now + i * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.3);
+
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start(now + i * 0.05);
+          osc.stop(now + i * 0.05 + 0.3);
+        });
+
+      } else if (type === 'airhorn') {
+        // Airhorn multi-tonal burst (3 pulses)
+        [0, 0.12, 0.24].forEach(offset => {
+          [466.16, 523.25, 622.25].forEach(freq => { // Bb4, C5, Eb5
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, now + offset);
+            osc.frequency.linearRampToValueAtTime(freq * 1.02, now + offset + 0.1);
+            gain.gain.setValueAtTime(0.35 * sfxVolume, now + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.12);
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(now + offset);
+            osc.stop(now + offset + 0.12);
+          });
+        });
+
+      } else if (type === 'cheer') {
+        // Synthèse d'ovation / crowd noise
+        const bufferSize = audioContext.sampleRate * 0.6;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+        }
+        const noise = audioContext.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1200;
+        filter.Q.value = 1.2;
+        const gain = audioContext.createGain();
+        gain.gain.setValueAtTime(0.4 * sfxVolume, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+        noise.start(now);
+
+      } else if (type === 'rimshot') {
+        // Ba-dum-tss
+        // "Ba" (tom 1)
+        const osc1 = audioContext.createOscillator();
+        const gain1 = audioContext.createGain();
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(160, now);
+        osc1.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+        gain1.gain.setValueAtTime(0.5 * sfxVolume, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc1.connect(gain1);
+        gain1.connect(masterGain);
+        osc1.start(now);
+        osc1.stop(now + 0.1);
+
+        // "Dum" (tom 2)
+        const osc2 = audioContext.createOscillator();
+        const gain2 = audioContext.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(130, now + 0.14);
+        osc2.frequency.exponentialRampToValueAtTime(65, now + 0.24);
+        gain2.gain.setValueAtTime(0.5 * sfxVolume, now + 0.14);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.24);
+        osc2.connect(gain2);
+        gain2.connect(masterGain);
+        osc2.start(now + 0.14);
+        osc2.stop(now + 0.24);
+
+        // "Tss" (hi-hat splash)
+        const bufferSize = audioContext.sampleRate * 0.35;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const d = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+        const noise = audioContext.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 5000;
+        const gain3 = audioContext.createGain();
+        gain3.gain.setValueAtTime(0.4 * sfxVolume, now + 0.28);
+        gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        noise.connect(filter);
+        filter.connect(gain3);
+        gain3.connect(masterGain);
+        noise.start(now + 0.28);
+
+      } else if (type === 'scratch') {
+        // DJ vinyl scratch
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(1400, now + 0.08);
+        osc.frequency.linearRampToValueAtTime(220, now + 0.18);
+        gain.gain.setValueAtTime(0.4 * sfxVolume, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + 0.22);
+
+      } else if (type === 'suspense') {
+        // Dun... Dun... DUUUUN!
+        [
+          { freq: 220, start: 0, dur: 0.25 },
+          { freq: 207.65, start: 0.3, dur: 0.25 },
+          { freq: 196, start: 0.65, dur: 0.6 }
+        ].forEach(note => {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(note.freq, now + note.start);
+          gain.gain.setValueAtTime(0.45 * sfxVolume, now + note.start);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + note.start + note.dur);
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start(now + note.start);
+          osc.stop(now + note.start + note.dur);
+        });
       }
     } catch (e) {
       console.warn('[AudioPlayer] SFX error:', e);
@@ -252,6 +423,18 @@ const AudioPlayer = (() => {
     stopVinylSpin();
   }
 
+  let visualizerMode = 0; // 0: Bars, 1: Line Wave, 2: Neon Ring
+  const VISUALIZER_NAMES = ['📊 Égaliseur', '〰️ Oscillogramme', '⭕ Anneau Néon'];
+
+  function toggleVisualizerMode() {
+    visualizerMode = (visualizerMode + 1) % 3;
+    return VISUALIZER_NAMES[visualizerMode];
+  }
+
+  function getVisualizerModeName() {
+    return VISUALIZER_NAMES[visualizerMode];
+  }
+
   /**
    * Visualisation audio Canvas
    */
@@ -277,22 +460,54 @@ const AudioPlayer = (() => {
       const dataArray = new Uint8Array(bufferLength);
       analyser.getByteFrequencyData(dataArray);
 
-      const barWidth = (canvas.width / bufferLength) * 1.5;
-      const gap = 2;
-      let x = 0;
-
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * canvas.height * 0.9;
-        const hue = 263 + (i / bufferLength) * (187 - 263);
-        const alpha = 0.6 + (dataArray[i] / 255) * 0.4;
-
-        ctx.fillStyle = `hsla(${hue}, 80%, 65%, ${alpha})`;
-        const y = (canvas.height - barHeight) / 2;
+      if (visualizerMode === 1) {
+        // Mode 1 : Waveform Line
         ctx.beginPath();
-        ctx.roundRect(x, y, Math.max(2, barWidth - gap), barHeight, 2);
-        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#06d6a0';
+        const sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+          x += sliceWidth;
+        }
+        ctx.stroke();
+      } else if (visualizerMode === 2) {
+        // Mode 2 : Neon Glow Pulse
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+        const radius = 15 + (avg / 255) * 20;
 
-        x += barWidth;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(168, 85, 247, ${0.4 + (avg / 255) * 0.6})`;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#ec4899';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      } else {
+        // Mode 0 : Bars
+        const barWidth = (canvas.width / bufferLength) * 1.5;
+        const gap = 2;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = (dataArray[i] / 255) * canvas.height * 0.9;
+          const hue = 263 + (i / bufferLength) * (187 - 263);
+          const alpha = 0.6 + (dataArray[i] / 255) * 0.4;
+
+          ctx.fillStyle = `hsla(${hue}, 80%, 65%, ${alpha})`;
+          const y = (canvas.height - barHeight) / 2;
+          ctx.beginPath();
+          ctx.roundRect(x, y, Math.max(2, barWidth - gap), barHeight, 2);
+          ctx.fill();
+
+          x += barWidth;
+        }
       }
     }
 
@@ -369,5 +584,7 @@ const AudioPlayer = (() => {
     getIsMuted,
     setDucking,
     playSfx,
+    toggleVisualizerMode,
+    getVisualizerModeName,
   };
 })();
