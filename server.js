@@ -464,19 +464,21 @@ wss.on('connection', (ws) => {
 
 wss.on('close', () => clearInterval(interval));
 
-// Start server
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`
-  ╔══════════════════════════════════════════╗
-  ║   🎵  HARMONIE BLIND TEST 🎵              ║
-  ║   🛡️  Security Headers & CSP Active       ║
-  ║   🤖  HarmonIA AI Chatbot Endpoint Active  ║
-  ║                                          ║
-  ║   Server:  http://localhost:${PORT}         ║
-  ║   WS:      ws://localhost:${PORT}           ║
-  ╚══════════════════════════════════════════╝
-  `);
-});
-
-module.exports = server;
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`
+    ╔══════════════════════════════════════════╗
+    ║   🎵  HARMONIE BLIND TEST 🎵              ║
+    ║   🛡️  Security Headers & CSP Active       ║
+    ║   🤖  HarmonIA AI Chatbot Endpoint Active  ║
+    ║                                          ║
+    ║   Server:  http://localhost:${PORT}         ║
+    ║   WS:      ws://localhost:${PORT}           ║
+    ╚══════════════════════════════════════════╝
+    `);
+  });
+  module.exports = server;
+}
 
