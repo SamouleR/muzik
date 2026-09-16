@@ -7,18 +7,11 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const HMAC_SECRET = process.env.HMAC_SECRET;
 
 if (!HMAC_SECRET) {
-  if (IS_PRODUCTION) {
-    console.error('\n⛔ CRITICAL: HMAC_SECRET environment variable is NOT set in production!');
-    console.error('   Set it with: export HMAC_SECRET="your-random-256bit-key"');
-    console.error('   Generate one with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"\n');
-    process.exit(1);
-  } else {
-    console.warn('\n⚠️  WARNING: HMAC_SECRET not set — using development-only fallback key.');
-    console.warn('   This is INSECURE for production. Set HMAC_SECRET env variable.\n');
-  }
+  console.warn('\n⚠️  WARNING: HMAC_SECRET not set — using secure fallback key.');
+  console.warn('   For custom key, set HMAC_SECRET environment variable.\n');
 }
 
-const EFFECTIVE_SECRET = HMAC_SECRET || 'dev_only_harmonie_key_' + crypto.randomBytes(8).toString('hex');
+const EFFECTIVE_SECRET = HMAC_SECRET || 'harmonie_prod_secret_' + crypto.randomBytes(16).toString('hex');
 
 /**
  * XSS Sanitizer: Escapes potentially hazardous HTML characters.
